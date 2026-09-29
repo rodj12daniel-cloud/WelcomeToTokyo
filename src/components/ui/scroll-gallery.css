@@ -1,0 +1,181 @@
+.scroll-gallery {
+  position: relative;
+  width: 100%;
+  height: 100svh;
+  min-height: 480px;
+  overflow: hidden;
+  isolation: isolate;
+  background: #121a15;
+  color: #f1f2ec;
+}
+
+.scroll-gallery__images,
+.scroll-gallery__image-frame {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.scroll-gallery__image-frame {
+  overflow: hidden;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+}
+
+.scroll-gallery__image {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  transform-origin: center center;
+  backface-visibility: hidden;
+  mask-size: 100% 100%;
+  -webkit-mask-size: 100% 100%;
+  mask-repeat: no-repeat;
+  -webkit-mask-repeat: no-repeat;
+  will-change: transform, mask-image;
+}
+
+.scroll-gallery__info {
+  position: absolute;
+  z-index: 2;
+  top: 50%;
+  left: 0;
+  width: 100%;
+  transform: translateY(-50%);
+  border-top: 1px solid rgba(241, 242, 236, 0.35);
+  border-bottom: 1px solid rgba(241, 242, 236, 0.35);
+  background: transparent;
+}
+
+.scroll-gallery__info-inner {
+  display: grid;
+  grid-template-columns: minmax(150px, 1fr) minmax(0, 2.5fr) minmax(120px, 1fr);
+  gap: 32px;
+  align-items: center;
+  min-height: 168px;
+  padding: 24px 5vw;
+}
+
+.scroll-gallery__prefix,
+.scroll-gallery__count {
+  color: #fff9ea;
+  font: 700 12px/1.5 "Zen Kaku Gothic New", sans-serif;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  text-shadow: 0 2px 5px rgba(0, 0, 0, 0.95), 0 5px 18px rgba(0, 0, 0, 0.8);
+}
+
+.scroll-gallery__count {
+  justify-self: end;
+  color: #d4a46b;
+}
+
+.scroll-gallery__side-info {
+  display: grid;
+  justify-items: end;
+  gap: 8px;
+  min-width: 0;
+}
+
+.scroll-gallery__meta {
+  color: rgba(255, 249, 234, 0.84);
+  font: 600 12px/1.5 "Zen Kaku Gothic New", sans-serif;
+  letter-spacing: 0.04em;
+  text-align: right;
+  text-shadow: 0 2px 5px rgba(0, 0, 0, 0.95), 0 5px 18px rgba(0, 0, 0, 0.8);
+}
+
+.scroll-gallery__title-wrap {
+  position: relative;
+  overflow: hidden;
+}
+
+.scroll-gallery__title {
+  margin: 0;
+  color: #fff9ea;
+  font: 700 clamp(38px, 6.4vw, 92px)/1.04 "Space Grotesk", sans-serif;
+  letter-spacing: 0;
+  text-shadow: 0 2px 5px rgba(0, 0, 0, 0.95), 0 6px 26px rgba(0, 0, 0, 0.85);
+  will-change: transform;
+}
+
+.scroll-gallery__description {
+  max-width: 58ch;
+  margin: 8px 0 0;
+  color: rgba(255, 249, 234, 0.9);
+  font-size: clamp(18px, 1.8vw, 24px);
+  line-height: 1.45;
+  text-shadow: 0 2px 5px rgba(0, 0, 0, 0.95), 0 5px 22px rgba(0, 0, 0, 0.9);
+}
+
+.scroll-gallery--single {
+  height: min(76svh, 760px);
+}
+
+.scroll-gallery--single .scroll-gallery__image-frame:not(:first-child) {
+  display: none;
+}
+
+.scroll-gallery--single .scroll-gallery__image {
+  mask-image: none !important;
+  -webkit-mask-image: none !important;
+}
+
+@media (max-width: 700px) {
+  .scroll-gallery {
+    min-height: 540px;
+  }
+
+  .scroll-gallery__info-inner {
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 12px 16px;
+    min-height: 158px;
+    padding: 20px 18px;
+  }
+
+  .scroll-gallery__prefix {
+    grid-column: 1 / -1;
+    font-size: 11px;
+  }
+
+  .scroll-gallery__title-wrap {
+    grid-column: 1;
+    grid-row: 2;
+  }
+
+  .scroll-gallery__title {
+    font-size: clamp(28px, 8.5vw, 48px);
+  }
+
+  .scroll-gallery__count {
+    grid-column: 2;
+    grid-row: 2;
+    font-size: 10px;
+  }
+
+  .scroll-gallery__side-info {
+    grid-column: 2;
+    grid-row: 2;
+    gap: 4px;
+    align-self: center;
+  }
+
+  .scroll-gallery__meta {
+    max-width: 34vw;
+    font-size: 9px;
+  }
+
+  .scroll-gallery__description {
+    font-size: 16px;
+    line-height: 1.45;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .scroll-gallery__image {
+    will-change: auto;
+  }
+}

@@ -1,0 +1,298 @@
+.sakura-poster-track {
+  position: relative;
+  width: 100%;
+  background: #ece8df;
+}
+
+.sakura-poster-fill {
+  height: 100svh;
+}
+
+.sakura-poster-sticky {
+  box-sizing: border-box;
+  width: 100%;
+  padding: clamp(1.25rem, 4vmin, 2.5rem);
+}
+
+.sakura-poster-sticky.is-sticky {
+  position: sticky;
+  top: 0;
+}
+
+.sakura-poster-frame {
+  position: relative;
+  display: flex;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  flex-direction: column;
+  overflow: hidden;
+  border-radius: 12px;
+  background: #f5f5f0;
+  box-shadow: 0 24px 80px rgba(80, 50, 50, 0.12);
+}
+
+.sakura-poster-visual {
+  position: relative;
+  min-height: 0;
+  flex: 1 1 auto;
+  overflow: hidden;
+  container-type: size;
+}
+
+.sakura-poster-scene {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  transform: scale(1.05);
+}
+
+.sakura-poster-title-wrap {
+  position: absolute;
+  z-index: 2;
+  top: 4%;
+  left: 4%;
+  width: 92%;
+  overflow: visible;
+}
+
+.sakura-poster-title-probe {
+  position: absolute;
+  visibility: hidden;
+  white-space: nowrap;
+  text-transform: uppercase;
+  line-height: 1;
+  pointer-events: none;
+}
+
+.sakura-poster-title {
+  display: block;
+  width: 100%;
+  margin: 0;
+  overflow: visible;
+  color: #fffaf5;
+  font-size: clamp(64px, 24vw, 480px);
+  line-height: 0.86;
+  text-align: left;
+  text-transform: uppercase;
+  white-space: nowrap;
+  text-shadow: 0 8px 26px rgba(41, 16, 18, 0.35), 0 1px 2px rgba(41, 16, 18, 0.45);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: geometricPrecision;
+}
+
+.sakura-poster-title > span:not(.sakura-poster-sr-only) {
+  display: inline-block;
+  will-change: transform, opacity;
+}
+
+.sakura-poster-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.sakura-poster-foreground {
+  position: absolute;
+  z-index: 3;
+  bottom: 0;
+  left: 50%;
+  width: min(92%, 78cqh);
+  max-height: 94%;
+  object-fit: contain;
+  object-position: bottom;
+  transform: translateX(-40%);
+  filter: drop-shadow(0 10px 28px rgba(40, 20, 20, 0.18));
+  pointer-events: none;
+}
+
+.sakura-poster-image-wash {
+  position: absolute;
+  z-index: 4;
+  inset: 0;
+  background: linear-gradient(to bottom, rgba(55, 28, 29, 0.22) 0%, rgba(55, 28, 29, 0.08) 42%, rgba(245, 245, 240, 0.03) 100%);
+  pointer-events: none;
+}
+
+.sakura-poster-copy {
+  position: absolute;
+  z-index: 5;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  display: flex;
+  min-height: 38%;
+  flex-direction: column;
+  padding: clamp(1.1rem, 4.5cqw, 2.25rem);
+  color: #fffaf6;
+  background: linear-gradient(to top, rgba(61, 32, 35, 0.86), rgba(112, 68, 69, 0.52) 56%, rgba(112, 68, 69, 0.08) 100%);
+  will-change: transform;
+}
+
+.sakura-poster-keywords {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  color: rgba(255, 250, 246, 0.94);
+  font: 300 clamp(9px, 1.7cqw, 11px)/1.3 Jost, sans-serif;
+  letter-spacing: 0.16em;
+  text-shadow: 0 2px 12px rgba(25, 12, 14, 0.4);
+}
+
+.sakura-poster-copy h2 {
+  position: relative;
+  z-index: 1;
+  margin: clamp(0.7rem, 2.2cqw, 1.15rem) 0 0;
+  color: #fffaf6;
+  font: 600 clamp(1.2rem, 3.6cqw, 1.7rem)/1.3 "Cormorant Garamond", "Yu Mincho", Georgia, serif;
+  text-shadow: 0 3px 18px rgba(25, 12, 14, 0.42);
+}
+
+.sakura-poster-body {
+  position: relative;
+  z-index: 1;
+  width: min(62%, 620px);
+  margin: clamp(0.5rem, 1.6cqw, 0.75rem) 0 0;
+  color: rgba(255, 250, 246, 0.96);
+  font: 300 clamp(10px, 1.7cqw, 12px)/1.55 Jost, sans-serif;
+  text-shadow: 0 2px 14px rgba(25, 12, 14, 0.45);
+}
+
+.sakura-poster-subheadline {
+  position: relative;
+  z-index: 1;
+  margin: clamp(0.65rem, 2cqw, 0.95rem) 0 0;
+  color: #fffaf6;
+  font: 500 clamp(0.95rem, 2.6cqw, 1.2rem)/1.35 Jost, sans-serif;
+  text-shadow: 0 2px 14px rgba(25, 12, 14, 0.45);
+}
+
+.sakura-poster-footer {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: auto;
+  padding-top: clamp(0.7rem, 2.4cqw, 1.1rem);
+  color: rgba(255, 250, 246, 0.9);
+  font: 300 clamp(9px, 1.6cqw, 11px)/1.4 Jost, sans-serif;
+  letter-spacing: 0.08em;
+  text-shadow: 0 2px 10px rgba(25, 12, 14, 0.42);
+}
+
+.sakura-poster-handle {
+  position: absolute;
+  right: clamp(0.75rem, 4.5cqw, 2.25rem);
+  bottom: clamp(0.35rem, 1.2cqw, 0.65rem);
+  z-index: 1;
+  color: rgba(255, 250, 246, 0.7);
+  font: 300 clamp(9px, 2cqw, 11px)/1.2 Jost, sans-serif;
+  text-shadow: 0 2px 8px rgba(25, 12, 14, 0.35);
+}
+
+@media (max-width: 700px) {
+  .sakura-poster-sticky {
+    padding: 12px;
+  }
+
+  .sakura-poster-frame {
+    border-radius: 8px;
+  }
+
+  .sakura-poster-title-wrap {
+    top: 6%;
+  }
+
+  .sakura-poster-title {
+    font-size: clamp(56px, 27vw, 190px);
+  }
+
+  .sakura-poster-copy {
+    min-height: 48%;
+    padding: 16px;
+    background: linear-gradient(to top, rgba(74, 44, 50, 0.82), rgba(120, 76, 82, 0.58) 72%, transparent);
+  }
+
+  .sakura-poster-keywords {
+    font-size: 10px;
+    letter-spacing: 0.1em;
+  }
+
+  .sakura-poster-copy h2 {
+    margin-top: 10px;
+    font-size: clamp(19px, 5vw, 26px);
+  }
+
+  .sakura-poster-body {
+    width: 100%;
+    margin-top: 7px;
+    font-size: 12px;
+    line-height: 1.45;
+  }
+
+  .sakura-poster-subheadline {
+    margin-top: 8px;
+    font-size: 14px;
+  }
+
+  .sakura-poster-footer {
+    gap: 6px;
+    padding-top: 8px;
+    font-size: 9px;
+    letter-spacing: 0.04em;
+  }
+}
+
+@media (max-height: 620px) and (min-width: 701px) {
+  .sakura-poster-sticky {
+    padding: 12px 4vw;
+  }
+
+  .sakura-poster-copy {
+    min-height: 46%;
+    padding: 14px 24px;
+  }
+
+  .sakura-poster-body {
+    width: 72%;
+    margin-top: 6px;
+    line-height: 1.4;
+  }
+
+  .sakura-poster-subheadline {
+    margin-top: 7px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sakura-poster-title > span:not(.sakura-poster-sr-only) {
+    transform: none !important;
+    opacity: 1 !important;
+    will-change: auto;
+  }
+
+  .sakura-poster-copy {
+    transform: none !important;
+  }
+}
+
+.home-sakura-poster .sakura-poster-sticky {
+  padding: 0;
+}
+
+.home-sakura-poster .sakura-poster-frame {
+  border-radius: 0;
+  box-shadow: none;
+}

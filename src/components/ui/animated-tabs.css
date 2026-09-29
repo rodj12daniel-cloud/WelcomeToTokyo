@@ -1,0 +1,134 @@
+.animated-tabs {
+  width: 100%;
+  color: #f1f2ec;
+}
+
+.animated-tabs__list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 24px;
+  border-bottom: 1px solid rgba(241, 242, 236, 0.2);
+}
+
+.animated-tabs__tab {
+  position: relative;
+  min-height: 56px;
+  padding: 10px 2px 14px;
+  border: 0;
+  background: transparent;
+  color: #c1cbc3;
+  cursor: pointer;
+  font: 700 13px/1.3 "Zen Kaku Gothic New", sans-serif;
+  letter-spacing: 0.04em;
+  text-align: left;
+  transition: color 160ms ease;
+}
+
+.animated-tabs__tab:hover,
+.animated-tabs__tab.is-active {
+  color: #fff9ea;
+}
+
+.animated-tabs__tab:focus-visible {
+  outline: 2px solid #d4a46b;
+  outline-offset: 3px;
+}
+
+.animated-tabs__indicator {
+  position: absolute;
+  right: 0;
+  bottom: -1px;
+  left: 0;
+  height: 3px;
+  background: #d4a46b;
+}
+
+.animated-tabs__panel {
+  min-height: 220px;
+  padding: 30px 0 0;
+}
+
+.animated-tabs__content {
+  width: 100%;
+}
+
+.fare-tab-content {
+  display: grid;
+  grid-template-columns: minmax(200px, 0.7fr) minmax(0, 1.3fr);
+  gap: 32px 60px;
+  align-items: center;
+  min-height: 180px;
+}
+
+.fare-tab-content__amount small {
+  display: block;
+  margin-bottom: 8px;
+  color: #d4a46b;
+  font: 800 11px/1.4 "Zen Kaku Gothic New", sans-serif;
+  letter-spacing: 0.1em;
+}
+
+.fare-tab-content__amount strong {
+  display: block;
+  color: #fff9ea;
+  font: 700 clamp(48px, 7vw, 82px)/0.98 "Space Grotesk", sans-serif;
+  letter-spacing: 0;
+  font-variant-numeric: tabular-nums;
+}
+
+.fare-tab-content__description {
+  max-width: 62ch;
+  margin: 0;
+  color: #d4ddd5;
+  font-size: 17px;
+  line-height: 1.7;
+}
+
+.fare-tab-content__note {
+  grid-column: 1 / -1;
+  margin: 0;
+  padding-top: 16px;
+  border-top: 1px solid rgba(241, 242, 236, 0.16);
+  color: #aebbb1;
+  font: 600 11px/1.5 "Zen Kaku Gothic New", sans-serif;
+  letter-spacing: 0.05em;
+}
+
+@media (max-width: 700px) {
+  .animated-tabs__list {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0 16px;
+  }
+
+  .animated-tabs__tab {
+    min-height: 50px;
+    font-size: 11px;
+  }
+
+  .animated-tabs__panel {
+    min-height: 260px;
+    padding-top: 24px;
+  }
+
+  .fare-tab-content {
+    grid-template-columns: 1fr;
+    gap: 16px;
+    align-items: start;
+    min-height: 0;
+  }
+
+  .fare-tab-content__amount strong {
+    font-size: 54px;
+  }
+
+  .fare-tab-content__description {
+    font-size: 15px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animated-tabs__tab {
+    transition: none;
+  }
+}

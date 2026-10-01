@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import "./sakura-editorial-poster.css";
+import OptimizedImage from "./components/OptimizedImage.jsx";
 
 export const SAKURA_EDITORIAL_DEFAULT_KEYWORDS = [
   { label: "Bloom" },
@@ -200,9 +201,9 @@ export default function SakuraEditorialPoster({
       <div className={`sakura-poster-sticky ${useSticky ? "is-sticky" : ""}`} style={{ height: panelHeight }}>
         <article className="sakura-poster-frame">
           <div className="sakura-poster-visual">
-            <img className="sakura-poster-scene" src={sceneSrc} alt={sceneAlt} draggable="false" />
+            <OptimizedImage className="sakura-poster-scene" src={sceneSrc} alt={sceneAlt} priority sizes="100vw" draggable="false" />
             <PosterTitle title={title} progress={revealProgress / 0.4} />
-            {foregroundSrc && <img className="sakura-poster-foreground" src={foregroundSrc} alt={foregroundAlt} draggable="false" />}
+            {foregroundSrc && <OptimizedImage className="sakura-poster-foreground" src={foregroundSrc} alt={foregroundAlt} priority sizes="100vw" draggable="false" />}
             <div className="sakura-poster-image-wash" aria-hidden="true" />
           </div>
           <div className="sakura-poster-copy" style={{ transform: `translate3d(0, ${(1 - copyProgress) * 100}%, 0)` }}>

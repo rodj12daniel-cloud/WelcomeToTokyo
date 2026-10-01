@@ -31,7 +31,6 @@ export function ProgressSlider({
   const [active, setActive] = useState(activeSlider);
   const [progress, setProgress] = useState(0);
   const [isFastForward, setIsFastForward] = useState(false);
-  const [paused, setPaused] = useState(false);
   const frame = useRef(0);
   const targetValue = useRef(null);
   const progressValue = useRef(0);
@@ -61,7 +60,7 @@ export function ProgressSlider({
   }, [active, sliderValues]);
 
   useEffect(() => {
-    if (!sliderValues.length || (paused && !isFastForward) || reducedMotion) return undefined;
+    if (!sliderValues.length) return undefined;
 
     const currentDuration = isFastForward ? fastDuration : duration;
     const startProgress = isFastForward ? progressValue.current : 0;
@@ -96,7 +95,7 @@ export function ProgressSlider({
 
     frame.current = requestAnimationFrame(animate);
     return () => cancelAnimationFrame(frame.current);
-  }, [active, duration, fastDuration, isFastForward, paused, reducedMotion, sliderValues]);
+  }, [active, duration, fastDuration, isFastForward, reducedMotion, sliderValues]);
 
   const handleButtonClick = (value) => {
     if (value === active) return;
@@ -121,12 +120,6 @@ export function ProgressSlider({
     <ProgressSliderContext.Provider value={contextValue}>
       <div
         className={`progressive-carousel${vertical ? " progressive-carousel--vertical" : ""}${className ? ` ${className}` : ""}`}
-        onMouseEnter={() => setPaused(true)}
-        onMouseLeave={() => setPaused(false)}
-        onFocusCapture={() => setPaused(true)}
-        onBlurCapture={(event) => {
-          if (!event.currentTarget.contains(event.relatedTarget)) setPaused(false);
-        }}
       >
         {children}
       </div>

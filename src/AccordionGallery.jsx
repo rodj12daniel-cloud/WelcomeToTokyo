@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { gsap } from "gsap";
 import "./AccordionGallery.css";
+import OptimizedImage from "./components/OptimizedImage.jsx";
 
 const EMPTY_ITEMS = [];
 
@@ -190,7 +191,7 @@ export default function AccordionGallery({
           >
             <span className="ag-panel__frame">
               <span className="ag-panel__media" ref={(element) => { mediaRefs.current[index] = element; }}>
-                <img src={item.image} alt={item.alt || item.label || ""} draggable="false" loading="lazy" decoding="async" referrerPolicy="no-referrer" />
+                <OptimizedImage src={item.image} alt={item.alt || item.label || ""} sizes="(max-width: 700px) 100vw, 50vw" draggable="false" loading="lazy" decoding="async" referrerPolicy="no-referrer" />
               </span>
               <span className="ag-panel__overlay" aria-hidden="true" />
             </span>

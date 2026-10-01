@@ -1,7 +1,7 @@
 .sakura-poster-track {
   position: relative;
   width: 100%;
-  background: #ece8df;
+  background: var(--night, #151e19);
 }
 
 .sakura-poster-fill {
@@ -28,7 +28,7 @@
   flex-direction: column;
   overflow: hidden;
   border-radius: 12px;
-  background: #f5f5f0;
+  background: var(--night, #151e19);
   box-shadow: 0 24px 80px rgba(80, 50, 50, 0.12);
 }
 

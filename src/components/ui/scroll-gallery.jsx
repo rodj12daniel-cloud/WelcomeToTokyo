@@ -3,6 +3,7 @@ import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import "./scroll-gallery.css";
+import OptimizedImage from "../OptimizedImage.jsx";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -76,6 +77,7 @@ export default function ScrollGallery({
   finalDelay = 40,
   stripsCount = 20,
   titleChangeThreshold = 0.3,
+  imageScale = 1.25,
   className = "",
 }) {
   const sectionRef = useRef(null);
@@ -97,7 +99,7 @@ export default function ScrollGallery({
     const title = titleRef.current;
     const stripBounds = createStripBounds(stripsCount);
     const totalDistance = initialDelay + finalDelay + (slides.length - 1) * scrollPerTransition;
-    const scaleFrom = 1.25;
+    const scaleFrom = imageScale;
     const scaleTo = 1;
     const scaleStep = (scaleFrom - scaleTo) / 2;
 
@@ -198,7 +200,7 @@ export default function ScrollGallery({
     return () => trigger.kill();
   }, {
     scope: sectionRef,
-    dependencies: [slides, initialDelay, finalDelay, scrollPerTransition, stripsCount, titleChangeThreshold],
+    dependencies: [slides, initialDelay, finalDelay, scrollPerTransition, stripsCount, titleChangeThreshold, imageScale],
     revertOnUpdate: true,
   });
 
@@ -213,11 +215,12 @@ export default function ScrollGallery({
       <div className="scroll-gallery__images" aria-hidden="true">
         {slides.map((slide, index) => (
           <div className="scroll-gallery__image-frame" key={`${slide.title}-${index}`}>
-            <img
+            <OptimizedImage
               alt=""
               className="scroll-gallery__image"
               decoding="async"
-              loading={index === 0 ? "eager" : "lazy"}
+              priority={index === 0}
+              sizes="(max-width: 850px) 180vh, 100vw"
               ref={(element) => { imageRefs.current[index] = element; }}
               src={slide.image}
             />

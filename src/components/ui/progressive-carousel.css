@@ -8,14 +8,14 @@
   height: clamp(480px, 65vh, 720px);
   min-height: 0;
   overflow: hidden;
-  background: #18221d;
+  background: var(--night, #151e19);
 }
 
 .progressive-carousel__slide {
   position: absolute;
   inset: 0;
   overflow: hidden;
-  background: #18221d;
+  background: var(--night, #151e19);
 }
 
 .progressive-carousel__image {

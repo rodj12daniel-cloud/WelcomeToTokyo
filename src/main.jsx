@@ -1,6 +1,8 @@
-import React, { createContext, useContext, useEffect, useRef, useState } from "react";
+import React, { createContext, useContext, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { createRoot } from "react-dom/client";
 import { createPortal } from "react-dom";
+import { AnimatePresence, motion, useReducedMotion } from "motion/react";
+import { CircleHelp, House, Images, MapPin, Menu as MenuIcon, TrainFront, X } from "lucide-react";
 
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -10,7 +12,9 @@ import SakuraEditorialPoster from "./sakura-editorial-poster.jsx";
 import AccordionGallery from "./AccordionGallery.jsx";
 import FlowerLoader from "./FlowerLoader.jsx";
 import ScrollGallery from "./components/ui/scroll-gallery.jsx";
+import OptimizedImage from "./components/OptimizedImage.jsx";
 import { AnimatedTabs } from "./components/ui/animated-tabs.jsx";
+import { CoverflowCarousel } from "./components/ui/coverflow-carousel.jsx";
 import {
   ProgressSlider,
   SliderBtn,
@@ -97,7 +101,7 @@ const places = [
     area: "SHIBUYA, TOKYO",
     hours: "DAY → NIGHT",
     description: "Quiet streets, independent stores, architecture and Tokyo's creative side.",
-    image: "https://images.pexels.com/photos/30856682/pexels-photo-30856682.jpeg?cs=srgb&fm=jpg",
+    image: "https://images.pexels.com/photos/29241321/pexels-photo-29241321.jpeg?cs=srgb&fm=jpg",
   },
   {
     number: "05",
@@ -165,11 +169,11 @@ const activities = [
   },
   {
     category: "SHOPPING",
-    title: "Explore Daikanyama",
-    text: "Independent fashion, design stores, coffee and some of Tokyo's most relaxed streets.",
-    location: "DAIKANYAMA",
+    title: "Explore Harajuku",
+    text: "Street fashion, independent shops, coffee and the lively lanes around Takeshita and Cat Street.",
+    location: "HARAJUKU",
     hours: "VARIES",
-    image: "https://images.pexels.com/photos/30856682/pexels-photo-30856682.jpeg?cs=srgb&fm=jpg",
+    image: "https://static.gltjp.com/glt/data/directory/16000/15748/20240601_200047_ccb5f21c_w1920.webp",
     fit: "cover",
   },
   {
@@ -488,8 +492,16 @@ function ScrollToTop() {
 
 function Header({ onMenu, onPlay, path, menuOpen }) {
   const t = useCopy();
+  const mobileLinks = [
+    { href: "/", label: "HOME", Icon: House },
+    { href: "/things-to-do", label: "THINGS TO DO", Icon: MapPin },
+    { href: "/train", label: "TRAIN", Icon: TrainFront },
+    { href: "/gallery", label: "GALLERY", Icon: Images },
+    { href: "/faq", label: "FAQ", Icon: CircleHelp },
+  ];
+
   return (
-    <header className="site-header">
+    <header className={`site-header${menuOpen ? " is-menu-open" : ""}`}>
       <a className="brand" href="/">
         {t("TOKYO")}
       </a>
@@ -514,6 +526,17 @@ function Header({ onMenu, onPlay, path, menuOpen }) {
           <span />
         </button>
       </div>
+
+      <nav className="mobile-nav-dock" aria-label={t("Main navigation")}>
+        {mobileLinks.map(({ href, label, Icon }) => (
+          <a key={href} href={href} aria-label={t(label)} aria-current={path === href ? "page" : undefined} title={t(label)}>
+            <Icon aria-hidden="true" />
+          </a>
+        ))}
+        <button type="button" onClick={onMenu} aria-label={t(menuOpen ? "Close menu" : "More navigation")} aria-expanded={menuOpen} aria-controls="mobile-menu" title={t("More navigation")}>
+          {menuOpen ? <X aria-hidden="true" /> : <MenuIcon aria-hidden="true" />}
+        </button>
+      </nav>
     </header>
   );
 }
@@ -574,7 +597,7 @@ function Place({ place, index }) {
   return (
     <article className="destination-card" id={place.name.toLowerCase().replaceAll(" ", "-")}>
       <div className="destination-cover">
-        <img src={place.image} alt={t(place.name)} loading={index ? "lazy" : "eager"} />
+        <OptimizedImage src={place.image} alt={t(place.name)} loading={index ? "lazy" : "eager"} priority={index === 0} sizes="(max-width: 850px) 100vw, 58vw" />
         <span className="destination-number">{place.number}</span>
         <span className="destination-notch" aria-hidden="true" />
         <span className="destination-fillet destination-fillet-right" aria-hidden="true" />
@@ -606,7 +629,7 @@ function ScrollVelocityRow({ images, direction = 1, speed = 86 }) {
       <div className="scroll-velocity-track" style={{ "--marquee-duration": `${speed}s` }}>
         {repeatedImages.map((image, index) => (
           <figure className="scroll-velocity-photo" key={`${image.src}-${index}`} aria-hidden={index >= images.length}>
-            <img src={image.src} alt={index < images.length ? image.alt : ""} loading="lazy" decoding="async" />
+            <OptimizedImage src={image.src} alt={index < images.length ? image.alt : ""} loading="lazy" decoding="async" sizes="(max-width: 850px) 88vw, 28vw" />
             <figcaption>{t(image.label)}</figcaption>
           </figure>
         ))}
@@ -669,7 +692,36 @@ function MapboxExplorer() {
   const [isNearView, setIsNearView] = useState(false);
   const [selected, setSelected] = useState(null);
   const [mapError, setMapError] = useState(false);
+  const [liveStreamIndex, setLiveStreamIndex] = useState(0);
   const token = import.meta.env.VITE_MAPBOX_TOKEN;
+  const liveStreams = [
+    {
+      label: "SHIBUYA / LIVE CAMERA",
+      title: "Live camera at Shibuya Crossing, Tokyo",
+      src: "https://www.youtube.com/embed/dfVK7ld38Ys?autoplay=1&mute=1&playsinline=1&controls=1&rel=0",
+    },
+    {
+      label: "SHIBUYA / CAMERA 02",
+      title: "Live camera 2 at Shibuya Scramble Crossing, Tokyo",
+      src: "https://www.youtube.com/embed/8H3nRCFVR6Y?autoplay=1&mute=1&playsinline=1&controls=1&rel=0",
+    },
+    {
+      label: "MT. FUJI / LIVE CAMERA",
+      title: "Mount Fuji live camera from Lake Kawaguchiko Oishi Park",
+      src: "https://www.youtube.com/embed/bdUbACCWmoY?autoplay=1&mute=1&playsinline=1&controls=1&rel=0",
+    },
+    {
+      label: "KABUKICHO / LIVE CAMERA",
+      title: "Live camera at Kabukicho, Shinjuku, Tokyo",
+      src: "https://www.youtube.com/embed/gFRtAAmiFbE?autoplay=1&mute=1&playsinline=1&controls=1&rel=0",
+    },
+    {
+      label: "TOKYO TOWER / LIVE CAMERA",
+      title: "Live camera at Tokyo Tower",
+      src: "https://www.youtube.com/embed/nu6NE55_X7A?list=PLsJX9jYnf4a0EoRn9P_R-5BbERIPtVVXJ&autoplay=1&mute=1&playsinline=1&controls=1&rel=0",
+    },
+  ];
+  const liveStream = liveStreams[liveStreamIndex];
 
   useEffect(() => {
     if (!root.current) return undefined;
@@ -763,14 +815,19 @@ function MapboxExplorer() {
       ) : (
         <div className="mapbox-live-stream">
           <iframe
-            src="https://www.youtube.com/embed/dfVK7ld38Ys?autoplay=1&mute=1&playsinline=1&controls=1&rel=0"
-            title={t("Live camera at Shibuya Crossing, Tokyo")}
+            key={liveStream.src}
+            src={liveStream.src}
+            title={t(liveStream.title)}
             allow="autoplay; encrypted-media; picture-in-picture; web-share"
             referrerPolicy="strict-origin-when-cross-origin"
             allowFullScreen
             loading="lazy"
           />
-          <span className="mapbox-live-label">{t("SHIBUYA / LIVE CAMERA")}</span>
+          <span className="mapbox-live-label">{t(liveStream.label)}</span>
+          <div className="mapbox-live-controls" aria-label={t("Change live camera")}>
+            <button type="button" onClick={() => setLiveStreamIndex((index) => (index - 1 + liveStreams.length) % liveStreams.length)} aria-label={t("Previous live camera")}>←</button>
+            <button type="button" onClick={() => setLiveStreamIndex((index) => (index + 1) % liveStreams.length)} aria-label={t("Next live camera")}>→</button>
+          </div>
         </div>
       )}
       {token ? (
@@ -781,7 +838,7 @@ function MapboxExplorer() {
         </div>
       ) : (
         <div className="mapbox-place-detail mapbox-place-detail--camera" aria-live="polite">
-          <span>{t("SHIBUYA / LIVE CAMERA")}</span>
+          <span>{t(liveStream.label)}</span>
         </div>
       )}
     </div>
@@ -807,7 +864,7 @@ function RailwayMapModal({ onClose }) {
     <div className="railway-modal" role="dialog" aria-modal="true" aria-label={t("Tokyo railway map")} onClick={onClose}>
       <button type="button" className="railway-modal-close" onClick={onClose} aria-label={t("Close railway map")}>×</button>
       <figure onClick={(event) => event.stopPropagation()}>
-        <img src="https://www.genkimobile.com/wordpress/wp-content/uploads/2025/11/Tokyo-metro-map1.png" alt="Tokyo railway and metro network map" />
+        <OptimizedImage src="https://www.genkimobile.com/wordpress/wp-content/uploads/2025/11/Tokyo-metro-map1.png" alt="Tokyo railway and metro network map" loading="lazy" sizes="(max-width: 850px) 100vw, 55vw" />
         <figcaption>{t("Tokyo railway and metro network")}</figcaption>
       </figure>
     </div>,
@@ -905,7 +962,7 @@ function Home({ onPlay, musicActive }) {
                 <span>{t("TOKYO, JAPAN")}</span>
               </div>
               <button type="button" className="railway-map-button" onClick={() => setRailMapOpen(true)} aria-label={t("Open Tokyo railway map")}>
-                <img src="https://www.genkimobile.com/wordpress/wp-content/uploads/2025/11/Tokyo-metro-map1.png" alt={t("Tokyo railway and metro network map")} loading="lazy" />
+                <OptimizedImage src="https://www.genkimobile.com/wordpress/wp-content/uploads/2025/11/Tokyo-metro-map1.png" alt={t("Tokyo railway and metro network map")} loading="lazy" sizes="(max-width: 850px) 100vw, 55vw" />
                 <span>{t("OPEN FULL MAP ↗")}</span>
               </button>
             </div>
@@ -1110,6 +1167,42 @@ function FareTabContent({ operator, amount, description }) {
   );
 }
 
+function PlacesToGoSection() {
+  const t = useCopy();
+  const slides = places.slice(0, 6).map((place) => ({
+    src: place.image,
+    alt: t(place.name),
+    title: t(place.name),
+    subtitle: t(place.description),
+    meta: [
+      { label: t("AREA"), value: t(place.area) },
+      { label: t("BEST TIME"), value: t(place.hours) },
+    ],
+    mapUrl: `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(place.mapQuery ?? `${place.name}, Tokyo, Japan`)}`,
+  }));
+
+  return (
+    <section className="places-to-go-section" id="places-to-go">
+      <div className="places-to-go-section__heading">
+        <span className="section-label">{t("07 / PLACES TO GO")}</span>
+        <h2>{t("PLACES TO GO")}<br /><span>{t("IN TOKYO.")}</span></h2>
+        <p>{t("Six city stops, from the bright crossing to a quiet shrine forest.")}</p>
+      </div>
+      <CoverflowCarousel
+        slides={slides}
+        cardWidth="clamp(180px, 26vw, 320px)"
+        rotate={42}
+        depth={0.58}
+        gap={0.05}
+        showCaption
+        showPagination
+        showNavigation
+        label={t("Places to go in Tokyo")}
+      />
+    </section>
+  );
+}
+
 function ShoppingGuideSection() {
   const t = useCopy();
   const [selectedArea, setSelectedArea] = useState(null);
@@ -1130,7 +1223,7 @@ function ShoppingGuideSection() {
   }, [selectedShoppingArea]);
 
   return (
-    <section className="shopping-section things-shopping">
+    <section className="shopping-section things-shopping" id="shopping">
       <div className="shopping-carousel-heading">
         <div className="section-label">{t("08 / SHOPPING")}</div>
         <h2>{t("BUY WHAT")}<br /><span>{t("YOU CAME FOR.")}</span></h2>
@@ -1140,7 +1233,7 @@ function ShoppingGuideSection() {
         <SliderContent>
           {shoppingGuide.map((item, index) => (
             <SliderWrapper key={item.area} value={item.area}>
-              <img className="progressive-carousel__image" src={item.image} alt={`${t(item.area)} shopping district`} loading={index === 0 ? "eager" : "lazy"} />
+              <OptimizedImage className="progressive-carousel__image" src={item.image} alt={`${t(item.area)} shopping district`} loading={index === 0 ? "eager" : "lazy"} priority={index === 0} sizes="(max-width: 850px) 100vw, 80vw" />
               <div className="progressive-carousel__shade" aria-hidden="true" />
               <div className="progressive-carousel__slide-copy">
                 <span>0{index + 1} / 0{shoppingGuide.length} · {t(item.area)}</span>
@@ -1186,17 +1279,30 @@ function ShoppingGuideSection() {
         document.body,
       )}
 
-      <section className="taxfree-section things-taxfree">
-        <span className="section-label">{t("09 / TAX-FREE — UPDATED 2026")}</span>
-        <h2>{t("NOVEMBER")}<br /><span>{t("MATTERS.")}</span></h2>
-        <p>{t("Japan's tax-free shopping system changes on November 1, 2026. Under the new system, eligible visitors pay consumption tax at purchase and receive the refund after passing customs on departure. Bring your original passport and follow the retailer's instructions.")}</p>
-        <small>{t("The rules and eligibility can change. Check the official Tokyo Tourism / Japan Tourism Agency guidance close to your trip.")}</small>
-      </section>
     </section>
   );
 }
 
 function Train() {
+  const t = useCopy();
+
+  return (
+    <>
+      <section className="transport-hero transport-hero-photo train-hero">
+        <OptimizedImage className="transport-hero-image" src="https://images.pexels.com/photos/31385056/pexels-photo-31385056.jpeg?cs=srgb&fm=jpg" alt="Japanese train station in Tokyo" priority sizes="100vw" referrerPolicy="no-referrer" />
+        <div className="transport-hero-overlay" />
+        <div className="transport-hero-copy">
+          <span className="section-label">{t("TOKYO / TRANSPORT")}</span>
+          <h1>{t("GET AROUND")}<br /><span>{t("TOKYO.")}</span></h1>
+          <p>{t("Train lines, fares, passes and the simplest way to move around Tokyo.")}</p>
+        </div>
+      </section>
+      <Footer />
+    </>
+  );
+}
+
+function TrainDetails() {
   const t = useCopy();
   const [activeLine, setActiveLine] = useState("ALL");
   const [from, setFrom] = useState("Shibuya");
@@ -1207,7 +1313,7 @@ function Train() {
   return (
     <>
       <section className="transport-hero transport-hero-photo train-hero">
-        <img className="transport-hero-image" src="https://images.pexels.com/photos/31385056/pexels-photo-31385056.jpeg?cs=srgb&fm=jpg" alt="Japanese train station in Tokyo" referrerPolicy="no-referrer" />
+        <OptimizedImage className="transport-hero-image" src="https://images.pexels.com/photos/31385056/pexels-photo-31385056.jpeg?cs=srgb&fm=jpg" alt="Japanese train station in Tokyo" priority sizes="100vw" referrerPolicy="no-referrer" />
         <div className="transport-hero-overlay" />
         <div className="transport-hero-copy">
           <span className="section-label">{t("TOKYO / TRANSPORT")}</span>
@@ -1301,9 +1407,13 @@ function Train() {
 
 function ThingsToDo() {
   const t = useCopy();
+  useLayoutEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+  }, []);
+
   const slides = [
     {
-      image: "https://images.pexels.com/photos/31001134/pexels-photo-31001134.jpeg?cs=srgb&fm=jpg",
+      image: "https://wallpaperaccess.com/full/259516.jpg",
       title: t("THINGS TO DO"),
       description: t("Find your own way through Tokyo."),
       meta: "TOKYO / 07 EXPERIENCES",
@@ -1315,7 +1425,6 @@ function ThingsToDo() {
         meta: `${t(activity.location)} / ${t(activity.hours)}`,
     })),
   ];
-
   return (
     <>
       <main className="activities-page activities-page--scroll">
@@ -1325,10 +1434,14 @@ function ThingsToDo() {
           scrollPerTransition={80}
           initialDelay={40}
           finalDelay={40}
+          imageScale={1}
           className="things-to-do-scroll-gallery"
         />
 
+        <PlacesToGoSection />
         <ShoppingGuideSection />
+        <FoodBentoSection />
+        <DayTripsSection />
       </main>
 
       <Footer />
@@ -1339,9 +1452,7 @@ function ThingsToDo() {
 function Gallery() {
   const t = useCopy();
   const [selectedIndex, setSelectedIndex] = useState(null);
-  const [filter, setFilter] = useState("ALL");
-  const categories = ["ALL", "CITY", "NIGHT", "CULTURE", "NATURE", "DESIGN", "RAIL", "FOOD"];
-  const filtered = filter === "ALL" ? gallery : gallery.filter((item) => item.category === filter);
+  const filtered = gallery;
   const selected = selectedIndex === null ? null : gallery[selectedIndex];
 
   const openPhoto = (photo) => {
@@ -1368,12 +1479,13 @@ function Gallery() {
   }, [selectedIndex]);
 
   const SafeImage = ({ src, alt, className = "", ...props }) => (
-    <img
+    <OptimizedImage
       className={className}
       src={src}
       alt={alt}
-      loading="eager"
+      loading="lazy"
       decoding="async"
+      sizes="100vw"
       referrerPolicy="no-referrer"
       onError={(event) => {
         event.currentTarget.style.opacity = "0";
@@ -1385,30 +1497,10 @@ function Gallery() {
 
   return (
     <>
-      <section className="page-hero page-hero-photo gallery-hero gallery-hero-photo">
-        <img className="page-hero-image" src="https://images.pexels.com/photos/31001134/pexels-photo-31001134.jpeg?cs=srgb&fm=jpg" alt="Shibuya Crossing at night in Tokyo" referrerPolicy="no-referrer" />
-        <div className="page-hero-overlay" />
-        <div className="page-hero-copy">
-          <span className="section-label">{t("TOKYO / VISUAL ARCHIVE")}</span>
-          <h1>{t("THE")}<br /><span>{t("GALLERY.")}</span></h1>
-          <p>{t("Twelve scenes, from Shibuya after dark to Kamakura's coast and Mount Fuji.")}</p>
-        </div>
-        <span className="gallery-hero-index">{t("12 FRAMES / TOKYO + DAY TRIPS")}</span>
-      </section>
-
       <main className="gallery-page gallery-page-enhanced">
-        <div className="gallery-intro-row">
-          <p>{t("SELECT A FRAME")}</p>
-          <span>{String(filtered.length).padStart(2, "0")} / {String(gallery.length).padStart(2, "0")} {t("IMAGES")}</span>
-        </div>
-        <div className="filter-row gallery-filters">
-          {categories.map((category) => (
-            <button key={category} type="button" className={filter === category ? "active" : ""} onClick={() => setFilter(category)}>{t(category)}</button>
-          ))}
-        </div>
+        <h1 className="gallery-page-title">{t("THE GALLERY")}</h1>
 
         <AccordionGallery
-          key={filter}
           className="gallery-accordion"
           items={filtered.map((photo) => ({
             id: photo.number,
@@ -1454,37 +1546,458 @@ function Gallery() {
   );
 }
 
+function DayTripsSection() {
+  const t = useCopy();
+  const tripTrackRef = useRef(null);
+  const tripDragRef = useRef(null);
+  const suppressTripClickRef = useRef(false);
+  const activeTripIndexRef = useRef(0);
+  const trips = [
+    {
+      number: "01",
+      title: "Kamakura",
+      subtitle: "COASTAL ESCAPE",
+      text: "A seaside town of temples, the Great Buddha and relaxed streets, about an hour from central Tokyo.",
+      image: places[6].image,
+      details: "Kamakura works best as a slow, walkable day away from the city. Start with the shrine district, follow the small shops and cafes around Komachi-dori, then continue west toward the Great Buddha and Hase-dera. Finish by the water at Yuigahama before taking the train back to Tokyo.",
+      itinerary: ["08:00 · Depart Tokyo for Kamakura", "09:15 · Tsurugaoka Hachimangu shrine", "10:45 · Walk and browse Komachi-dori", "12:00 · Lunch near the old town", "13:30 · Great Buddha in Kotoku-in", "14:30 · Hase-dera temple and hillside views", "16:00 · Yuigahama beach walk", "17:30 · Return to Tokyo"],
+    },
+    {
+      number: "02",
+      title: "Kawaguchiko / Mt. Fuji",
+      subtitle: "MOUNTAIN VIEWS",
+      text: "A lakeside day trip for wide Fuji views, scenic railways and a slower rhythm beyond the city.",
+      image: places[7].image,
+      details: "Kawaguchiko is best treated as a weather-led day trip. Leave early for the clearest mountain views, keep the lakeside route flexible, and allow time for the ropeway, local cafes and photo stops. Even when Fuji is hidden, the lake, hills and slower rhythm make the journey worthwhile.",
+      itinerary: ["07:00 · Depart Tokyo for Kawaguchiko", "09:30 · Arrive and check the lakeside forecast", "10:00 · Oishi Park and Fuji viewpoints", "11:30 · Local lunch with mountain views", "13:00 · Mt. Fuji Panoramic Ropeway", "14:30 · Lake walk or scenic railway stop", "16:00 · Cafe and final photo stops", "17:00 · Return to Tokyo"],
+    },
+    {
+      number: "03",
+      title: "Kawagoe",
+      subtitle: "LITTLE EDO",
+      text: "Wander historic storehouse streets, visit the bell tower and browse the old town's sweets shops.",
+      image: "https://static.gltjp.com/glt/data/article/21000/20523/20231117_082209_160e653e_w1920.webp",
+      details: "Kawagoe makes an easy escape for a day among traditional storehouses and temple grounds. Walk the Kurazukuri district, listen for the bell at Toki no Kane and stop along Kashiya Yokocho for local sweets. Leave time for the gardens and halls of Kita-in before heading back to Tokyo.",
+      itinerary: ["08:30 · Depart Tokyo for Kawagoe", "09:30 · Kurazukuri old-town streets", "10:30 · Toki no Kane bell tower", "11:00 · Sweets along Kashiya Yokocho", "12:00 · Lunch in the historic district", "13:30 · Kita-in temple and gardens", "15:00 · Browse local shops", "16:30 · Return to Tokyo"],
+    },
+    {
+      number: "04",
+      title: "Yokohama",
+      subtitle: "HARBOR CITY",
+      text: "Explore a lively waterfront, historic red-brick warehouses and the flavors of Chinatown.",
+      image: "https://images.trvl-media.com/place/6102742/1ae06a59-6da3-491d-aeae-11ab8189b9af.jpg",
+      details: "Yokohama pairs a breezy waterfront with a lively port-city character. Start around Minato Mirai, walk the Red Brick Warehouse waterfront and continue to Yamashita Park. Save time for Chinatown, where narrow lanes and busy restaurants make an easy end to the day.",
+      itinerary: ["09:00 · Depart Tokyo for Yokohama", "10:00 · Minato Mirai waterfront", "11:00 · Red Brick Warehouse", "12:30 · Lunch in Chinatown", "14:00 · Yamashita Park and the harbor", "15:30 · Walk the historic port district", "17:00 · Return to Tokyo"],
+    },
+    {
+      number: "05",
+      title: "Hakone",
+      subtitle: "MOUNTAIN RETREAT",
+      text: "Take in mountain scenery, volcanic landscapes and the calm of Lake Ashi.",
+      image: "https://t3.ftcdn.net/jpg/02/48/70/54/360_F_248705449_95pJle12PhFPCkNgjOAWPYYH3BlklVqk.jpg",
+      details: "Hakone rewards an early start and a flexible route through the mountains. Ride the ropeway over Owakudani, then continue toward Lake Ashi for a lakeside walk and a visit to Hakone Shrine. Check transport and weather before setting out, as mountain routes can change with conditions.",
+      itinerary: ["07:00 · Depart Tokyo for Hakone", "09:30 · Arrive in the Hakone area", "10:00 · Owakudani volcanic valley", "11:30 · Ropeway toward Lake Ashi", "12:30 · Lunch by the lake", "14:00 · Hakone Shrine and lakeside walk", "16:00 · Return toward Tokyo"],
+    },
+    {
+      number: "06",
+      title: "Nikko",
+      subtitle: "SHRINES & FORESTS",
+      text: "See ornate shrine architecture framed by cedar forests and mountain scenery.",
+      image: "https://cdn.getyourguide.com/image/format=auto%2Cfit=crop%2Cgravity=auto%2Cquality=60%2Cwidth=400%2Cheight=265%2Cdpr=2/tour_img/86b7682b27bbb74357fcc74e5d1840758a3b118a840424a43144eabe5aba5738.png",
+      details: "Nikko is a full day out, with ornate shrine architecture set among tall cedar trees. Focus your visit on the Toshogu Shrine complex, Rinno-ji and the Shinkyo Bridge, and leave the wider lake and waterfall area for a separate trip unless you have extra time.",
+      itinerary: ["07:00 · Depart Tokyo for Nikko", "09:30 · Arrive and walk to the shrine area", "10:00 · Toshogu Shrine", "12:00 · Lunch near the historic district", "13:00 · Rinno-ji temple", "14:00 · Shinkyo Bridge and cedar-lined paths", "15:30 · Browse the town before departure", "17:00 · Return to Tokyo"],
+    },
+  ];
+  const [selectedTrip, setSelectedTrip] = useState(null);
+  const selectedTripRef = useRef(null);
+  const carouselTrips = [...trips, ...trips, ...trips];
+  const [activeTripIndex, setActiveTripIndex] = useState(trips.length);
+  const closeTrip = () => setSelectedTrip(null);
+  selectedTripRef.current = selectedTrip;
+  activeTripIndexRef.current = activeTripIndex;
+  const getTripSetWidth = (track) => {
+    const firstCard = track.children[0];
+    const nextSetCard = track.children[trips.length];
+    return firstCard && nextSetCard ? nextSetCard.offsetLeft - firstCard.offsetLeft : 0;
+  };
+  const normalizeTripPosition = () => {
+    const track = tripTrackRef.current;
+    if (!track) return;
+    const setWidth = getTripSetWidth(track);
+    if (!setWidth) return;
+
+    const offset = ((track.scrollLeft - setWidth) % setWidth + setWidth) % setWidth;
+    track.scrollLeft = setWidth + offset;
+  };
+  const getCenteredTripIndex = (track) => {
+    const center = track.getBoundingClientRect().left + track.clientWidth / 2;
+    let closestIndex = 0;
+    let closestDistance = Infinity;
+
+    Array.from(track.children).forEach((card, index) => {
+      const bounds = card.getBoundingClientRect();
+      const distance = Math.abs(bounds.left + bounds.width / 2 - center);
+      if (distance < closestDistance) {
+        closestIndex = index;
+        closestDistance = distance;
+      }
+    });
+
+    return closestIndex;
+  };
+  const handleTripScroll = (event) => {
+    const track = event.currentTarget;
+    const closestIndex = getCenteredTripIndex(track);
+
+    if (closestIndex !== activeTripIndexRef.current) {
+      activeTripIndexRef.current = closestIndex;
+      setActiveTripIndex(closestIndex);
+    }
+  };
+  useEffect(() => {
+    const track = tripTrackRef.current;
+    if (!track) return undefined;
+
+    const setWidth = getTripSetWidth(track);
+    track.scrollLeft = setWidth;
+    let previousTime = 0;
+    let animationFrame = 0;
+    const advance = (time) => {
+      if (previousTime && !tripDragRef.current && !selectedTripRef.current) {
+        const elapsed = Math.min((time - previousTime) / 1000, 0.05);
+        const loopWidth = getTripSetWidth(track);
+        if (loopWidth) {
+          track.scrollLeft += elapsed * 72;
+          if (track.scrollLeft >= loopWidth * 2) track.scrollLeft -= loopWidth;
+        }
+      }
+      previousTime = time;
+      animationFrame = window.requestAnimationFrame(advance);
+    };
+
+    animationFrame = window.requestAnimationFrame(advance);
+    return () => window.cancelAnimationFrame(animationFrame);
+  }, [trips.length]);
+  const handleTripPointerDown = (event) => {
+    if (event.button !== 0) return;
+    const track = tripTrackRef.current;
+    const card = event.target.closest(".faq-day-trip-card");
+    if (!card || !track) return;
+
+    tripDragRef.current = {
+      pointerId: event.pointerId,
+      startX: event.clientX,
+      scrollLeft: track.scrollLeft,
+      moved: false,
+    };
+    card.setPointerCapture(event.pointerId);
+    track.classList.add("is-dragging");
+  };
+  const handleTripPointerMove = (event) => {
+    const drag = tripDragRef.current;
+    const track = tripTrackRef.current;
+    if (!drag || drag.pointerId !== event.pointerId || !track) return;
+
+    const deltaX = event.clientX - drag.startX;
+    if (Math.abs(deltaX) > 5) drag.moved = true;
+    if (drag.moved) {
+      event.preventDefault();
+      track.scrollLeft = drag.scrollLeft - deltaX;
+    }
+  };
+  const handleTripPointerUp = (event) => {
+    const drag = tripDragRef.current;
+    if (!drag || drag.pointerId !== event.pointerId) return;
+
+    tripDragRef.current = null;
+    tripTrackRef.current?.classList.remove("is-dragging");
+    normalizeTripPosition();
+    if (drag.moved) {
+      suppressTripClickRef.current = true;
+      window.setTimeout(() => { suppressTripClickRef.current = false; }, 0);
+    }
+  };
+  const handleTripClickCapture = (event) => {
+    if (!suppressTripClickRef.current) return;
+    event.preventDefault();
+    event.stopPropagation();
+    suppressTripClickRef.current = false;
+  };
+
+  return (
+    <section className="faq-day-trips" id="day-trips">
+      <div className="faq-day-trips__heading">
+        <span className="section-label">{t("TOKYO / DAY TRIPS")}</span>
+        <h2>{t("BEYOND")}<br /><span>{t("THE CITY.")}</span></h2>
+        <p>{t("Six easy escapes when Tokyo calls for a different pace.")}</p>
+      </div>
+      <div
+        ref={tripTrackRef}
+        className="faq-day-trips__grid"
+        onPointerDown={handleTripPointerDown}
+        onPointerMove={handleTripPointerMove}
+        onPointerUp={handleTripPointerUp}
+        onPointerCancel={handleTripPointerUp}
+        onScroll={handleTripScroll}
+        onClickCapture={handleTripClickCapture}
+      >
+        {carouselTrips.map((trip, index) => (
+          <motion.article
+            className={`faq-day-trip-card${activeTripIndex === index ? " is-active" : ""}`}
+            key={`${trip.title}-${index}`}
+            role="button"
+            tabIndex={0}
+            onClick={() => setSelectedTrip(trip)}
+            onKeyDown={(event) => {
+              if (event.key === "Enter" || event.key === " ") {
+                event.preventDefault();
+                setSelectedTrip(trip);
+              }
+            }}
+            initial={{ opacity: 0, y: 36 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.2 }}
+            transition={{ duration: 0.7, delay: (index % trips.length) * 0.12, ease: "easeOut" }}
+          >
+            <div className="faq-day-trip-card__image">
+              <OptimizedImage src={trip.image} alt={t(trip.title)} loading="lazy" sizes="(max-width: 850px) 100vw, 50vw" />
+            </div>
+            <div className="faq-day-trip-card__copy">
+              <span>{t(trip.subtitle)}</span>
+              <h3>{t(trip.title)}</h3>
+              <p>{t(trip.text)}</p>
+            </div>
+          </motion.article>
+        ))}
+      </div>
+      {selectedTrip && createPortal(
+        <div className="day-trip-modal" role="dialog" aria-modal="true" aria-labelledby="day-trip-modal-title" onClick={closeTrip}>
+          <section className="day-trip-modal__panel" onClick={(event) => event.stopPropagation()}>
+            <button type="button" className="day-trip-modal__close" onClick={closeTrip} aria-label={t("Close day trip details")}>×</button>
+            <span className="section-label">{t(selectedTrip.subtitle)}</span>
+            <h2 id="day-trip-modal-title">{t(selectedTrip.title)}</h2>
+            <p className="day-trip-modal__details">{t(selectedTrip.details)}</p>
+            <h3>{t("SAMPLE ITINERARY")}</h3>
+            <ol>
+              {selectedTrip.itinerary.map((stop) => <li key={stop}>{t(stop)}</li>)}
+            </ol>
+          </section>
+        </div>,
+        document.body,
+      )}
+    </section>
+  );
+}
+
+function FoodBentoSection() {
+  const t = useCopy();
+  const [selectedFood, setSelectedFood] = useState(null);
+  const foods = [
+    { id: 1, title: "Sushi counters", desc: "Seasonal fish, careful rice and the quiet theatre of a Tokyo counter.", image: "https://www.craftycookbook.com/wp-content/uploads/2024/04/nigiri-sushi-1200.jpg", className: "food-bento-card--large", spots: [{ name: "Sushi no Midori Ginza", area: "Ginza" }, { name: "Tsukiji Outer Market", area: "Tsukiji" }] },
+    { id: 2, title: "Ramen", desc: "A hot bowl for late trains, rainy evenings and standing-room neighbourhood shops.", image: "https://shop.ichiranusa.com/cdn/shop/files/Finishedramenwithscallion_1.jpg?v=1776107518", className: "food-bento-card--tall", spots: [{ name: "Ichiran Shibuya", area: "Shibuya" }, { name: "Fuunji", area: "Shinjuku" }] },
+    { id: 3, title: "Tempura", desc: "Light batter, seasonal vegetables and seafood served at its crispest.", image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRkIlRMPugkVKqRL1ZvNzwAV1vAgpG4TPjTGZRJBpvz8GhddDSJ5phDftQ&s=10", className: "food-bento-card--wide", spots: [{ name: "Tempura Kondo", area: "Ginza" }, { name: "Shinjuku Tsunahachi", area: "Shinjuku" }] },
+    { id: 4, title: "Yakitori", desc: "Charcoal-grilled skewers, tare glaze and the warm energy of a tiny izakaya.", image: "https://commons.wikimedia.org/wiki/Special:FilePath/Yakitori.jpg", className: "food-bento-card--small", spots: [{ name: "Omoide Yokocho", area: "Shinjuku" }, { name: "Torikizoku Shibuya Center-gai", area: "Shibuya" }] },
+    { id: 5, title: "Matcha sweets", desc: "A slower final stop: bitter green tea, soft texture and a little sweetness.", image: "https://ekogram.pl/cdn/shop/articles/matcha-jak-przygotowac_b988da34-79fe-4639-9b36-e9fd10dde826.jpg?v=1773227040", className: "food-bento-card--small food-bento-card--matcha", spots: [{ name: "Suzukien Asakusa", area: "Asakusa" }, { name: "Nakamura Tokichi Ginza", area: "Ginza" }] },
+    { id: 6, title: "Gyukatsu", desc: "Crisp breaded beef, seared at the table for a tender center and deep savory flavor.", image: "https://japanesetaste.com/cdn/shop/articles/Gyukatsu_Cover_Photo_a41ff13e-8fc4-40c7-8ce7-6bc09ba4cb18.jpg?v=1767083074&width=600", className: "food-bento-card--large", spots: [{ name: "Gyukatsu Motomura Shibuya", area: "Shibuya" }, { name: "Gyukatsu Kyoto Katsugyu Shinjuku", area: "Shinjuku" }] },
+    { id: 7, title: "Wagyu", desc: "Richly marbled Japanese beef, best enjoyed slowly at a yakiniku or steak counter.", image: "https://res.klook.com/image/upload/w_750,h_469,c_fill,q_85/w_80,x_15,y_15,g_south_west,l_Klook_water_br_trans_yhcmh3/activities/nbrxefq9l3ms2mlo6lbo.jpg", className: "food-bento-card--tall", spots: [{ name: "Yoroniku", area: "Minami-Aoyama" }, { name: "Jojoen Shinjuku", area: "Shinjuku" }] },
+    { id: 8, title: "Takoyaki", desc: "Hot, crisp-edged octopus bites topped with savory sauce, bonito and aonori.", image: "https://sudachirecipes.com/wp-content/uploads/2025/08/takoyaki-new-thumb.jpg", className: "food-bento-card--tall", spots: [{ name: "Gindaco Asakusa", area: "Asakusa" }, { name: "Tsukiji Gindaco Shibuya", area: "Shibuya" }] },
+    { id: 9, title: "Famichiki", desc: "FamilyMart's famously juicy, crunchy hot-counter fried chicken, perfect for a quick konbini stop.", image: "https://nutriscan.app/calories-nutrition/images/famichiki-familymart-b1603.webp", className: "food-bento-card--large", spots: [{ name: "FamilyMart Shibuya Center-gai", area: "Shibuya" }, { name: "FamilyMart Shinjuku Kabukicho", area: "Shinjuku" }] },
+    { id: 10, title: "Curry katsu", desc: "Golden pork cutlet over rice with a generous pour of warm Japanese curry.", image: "https://umamibites.com/wp-content/uploads/2024/08/UB210_01.jpg", className: "food-bento-card--large", spots: [{ name: "CoCo Ichibanya Shibuya", area: "Shibuya" }, { name: "Tonkatsu Marugo", area: "Akihabara" }] },
+  ];
+
+  return (
+    <section className="food-bento-section" id="food">
+      <div className="food-bento-heading">
+        <span className="section-label">{t("TOKYO / FOOD")}</span>
+        <h2>{t("FOODS")}<br /><span>{t("TO TRY.")}</span></h2>
+        <p>{t("Follow the steam, the charcoal and the small signs glowing after dark.")}</p>
+      </div>
+      <div className="food-bento-grid">
+        {foods.map((food, index) => (
+          <motion.article
+            key={food.id}
+            className={`food-bento-card ${food.className}`}
+            initial={{ opacity: 0, y: 24 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.16 }}
+            transition={{ duration: .55, delay: index * .06, ease: "easeOut" }}
+            onClick={() => setSelectedFood(food)}
+            role="button"
+            tabIndex={0}
+            onKeyDown={(event) => {
+              if (event.key === "Enter" || event.key === " ") {
+                event.preventDefault();
+                setSelectedFood(food);
+              }
+            }}
+          >
+            <OptimizedImage src={food.image} alt={t(food.title)} loading="lazy" decoding="async" sizes="(max-width: 700px) 100vw, 42vw" />
+            <div className="food-bento-card__overlay">
+              <span>{String(food.id).padStart(2, "0")}</span>
+              <h3>{t(food.title)}</h3>
+              <p>{t(food.desc)}</p>
+            </div>
+          </motion.article>
+        ))}
+      </div>
+      {selectedFood && createPortal(
+        <div className="food-bento-modal" role="dialog" aria-modal="true" aria-labelledby="food-bento-modal-title" onClick={() => setSelectedFood(null)}>
+          <section className="food-bento-modal__panel" onClick={(event) => event.stopPropagation()}>
+            <button type="button" className="food-bento-modal__close" onClick={() => setSelectedFood(null)} aria-label={t("Close food details")}>×</button>
+            <OptimizedImage src={selectedFood.image} alt={t(selectedFood.title)} loading="eager" sizes="(max-width: 700px) 100vw, 720px" />
+            <div>
+              <span className="section-label">{t("FOOD TO TRY")}</span>
+              <h2 id="food-bento-modal-title">{t(selectedFood.title)}</h2>
+              <p>{t(selectedFood.desc)}</p>
+              <section className="food-bento-modal__spots" aria-labelledby="food-bento-spots-title">
+                <h3 id="food-bento-spots-title">{t("GOOD SPOTS IN TOKYO")}</h3>
+                <ul>
+                  {selectedFood.spots.map((spot) => (
+                    <li key={spot.name}>
+                      <a href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${spot.name}, ${spot.area}, Tokyo, Japan`)}`} target="_blank" rel="noopener noreferrer">
+                        <span><strong>{t(spot.name)}</strong><small>{t(spot.area)}</small></span>
+                        <span className="food-bento-modal__map-link">{t("OPEN IN MAP")} <b aria-hidden="true">↗</b></span>
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </section>
+            </div>
+          </section>
+        </div>,
+        document.body,
+      )}
+    </section>
+  );
+}
+
+function TaxFreeSection() {
+  const t = useCopy();
+
+  return (
+    <section className="taxfree-section things-taxfree">
+      <div className="taxfree-card">
+        <span className="section-label">{t("09 / TAX-FREE — UPDATED 2026")}</span>
+        <h2>{t("NOVEMBER")}<br /><span>{t("MATTERS.")}</span></h2>
+        <p>{t("Japan's tax-free shopping system changes on November 1, 2026. Under the new system, eligible visitors pay consumption tax at purchase and receive the refund after passing customs on departure. Bring your original passport and follow the retailer's instructions.")}</p>
+        <small>{t("The rules and eligibility can change. Check the official Tokyo Tourism / Japan Tourism Agency guidance close to your trip.")}</small>
+      </div>
+    </section>
+  );
+}
+
 function FAQ() {
   const t = useCopy();
+  const reduceMotion = useReducedMotion();
   const questions = [
     [
       "01",
       "What is the best time to visit Tokyo?",
-      "Tokyo changes throughout the year. Spring and autumn are popular for comfortable weather and seasonal scenery, while summer and winter offer a different atmosphere.",
+      "Spring (March to May) and autumn (October to November) usually bring comfortable weather. Cherry blossom timing varies each year, and Golden Week is especially busy. Summer is hot and humid; winter is cooler, often with clear skies.",
     ],
     [
       "02",
-      "How do I get around Tokyo?",
-      "Tokyo's train and subway network makes most major neighborhoods accessible without a car. Walking is also one of the best ways to experience individual neighborhoods.",
+      "How many days do I need in Tokyo?",
+      "Four or five days gives most first-time visitors room for several neighborhoods, museums or gardens, and unhurried meals. Three days can cover highlights at a faster pace; add days for day trips or a slower visit.",
     ],
     [
       "03",
-      "Which areas are featured?",
-      "This project focuses on Shibuya, Asakusa, Meiji Jingu, Daikanyama and Tokyo Skytree.",
+      "How much money should I budget for a trip to Tokyo?",
+      "As a rough daily guide per person, allow about ¥6,000–¥10,000 for budget meals, local transit and low-cost activities, or ¥12,000–¥25,000 for more restaurant meals and paid attractions. Accommodation, shopping, long-distance travel and special experiences are extra; prices vary by season and style.",
     ],
     [
       "04",
-      "Is Tokyo expensive?",
-      "Tokyo has options across a wide range of budgets. Food, accommodation and activities can all be approached economically with some planning.",
+      "Is Tokyo expensive for tourists?",
+      "Tokyo can be visited on many budgets. Casual meals, convenience stores, public parks and an extensive train network help keep costs manageable, while hotels, fine dining, taxis and popular experiences can raise the total quickly.",
     ],
     [
       "05",
-      "What should I know before visiting?",
-      "Research transportation, opening hours and reservation requirements for places you specifically want to visit. Carrying some cash can also be useful.",
+      "What is the easiest way to get around Tokyo?",
+      "For most visitors, use trains and subways for longer hops and walk within each neighborhood. A stored-value IC card makes transfers and small purchases easier. Check the last train before a late night out, and use a taxi when carrying luggage or traveling after service ends.",
+    ],
+    [
+      "06",
+      "Do I need a Suica or PASMO card?",
+      "You do not strictly need one, but an IC card is convenient for trains, buses and many convenience stores. A mobile transit card or a visitor card such as Welcome Suica can work well; availability, supported devices and purchase locations can change, so check current operator guidance.",
+    ],
+    [
+      "07",
+      "What is the difference between Tokyo Metro and JR trains?",
+      "They are separate rail operators with different lines, stations and fare products. Tokyo Metro runs subway lines, while JR operates lines such as the Yamanote Line. IC cards work across many services, but operator-specific passes may not cover every train you take.",
+    ],
+    [
+      "08",
+      "How do I get from Narita Airport to Tokyo?",
+      "The Narita Express serves major hubs including Tokyo, Shinjuku and Shibuya; the Keisei Skyliner is a fast option for Ueno and Nippori. Other rail and bus services connect different areas. Choose based on your hotel, arrival time, luggage and current schedules.",
+    ],
+    [
+      "09",
+      "How do I get from Haneda Airport to central Tokyo?",
+      "Keikyu trains connect Haneda with Shinagawa and other destinations, while the Tokyo Monorail runs to Hamamatsucho for onward JR connections. Airport buses and taxis are alternatives; check the route that best matches your hotel and arrival time.",
+    ],
+    [
+      "10",
+      "Do I need to carry cash in Tokyo?",
+      "Cards and contactless payments are common, but some small restaurants, neighborhood shops, temple stalls and ticket machines may prefer or require cash. Carry a modest amount of yen and use ATMs at convenience stores or post offices when needed.",
+    ],
+    [
+      "11",
+      "Are credit cards widely accepted?",
+      "Yes, especially at hotels, department stores, chain restaurants and larger attractions. Acceptance is less predictable at small independent businesses, so keep a backup payment method and a little cash.",
+    ],
+    [
+      "12",
+      "Is English commonly spoken in Tokyo?",
+      "You will find English support at major stations, airports, hotels and tourist attractions, but it is not universal in everyday shops or restaurants. Translation apps, station names written in Japanese, and a saved hotel address are useful backups.",
+    ],
+    [
+      "13",
+      "What Japanese phrases should I know?",
+      "Useful phrases include sumimasen (excuse me), arigatou gozaimasu (thank you), onegaishimasu (please), and kore o kudasai (this one, please). A friendly greeting and patient gestures go a long way; translation apps can help with longer questions.",
+    ],
+    [
+      "14",
+      "Is Tokyo safe for tourists?",
+      "Tokyo is generally considered a safe city, but use the same care you would anywhere: watch your belongings in crowded places, take care around nightlife touts, follow local guidance during emergencies, and keep your accommodation address available.",
+    ],
+    [
+      "15",
+      "What should I know about Japanese train etiquette?",
+      "Queue where marked, let passengers exit before boarding, keep conversations quiet, and set your phone to silent. Avoid blocking doors or priority spaces, and keep large luggage out of busy aisles when possible. Follow signs and staff instructions at each station.",
+    ],
+    [
+      "16",
+      "Do restaurants in Tokyo accept reservations?",
+      "Many do, especially destination restaurants, small counters and popular weekend spots. Others are walk-in only. Check the restaurant's own booking information, note cancellation rules, and reserve early for high-demand places.",
+    ],
+    [
+      "17",
+      "Is tipping expected in Japan?",
+      "No. Tipping is not customary in Japan and can cause confusion. A sincere thank-you is appreciated; some establishments add a service charge, which will be shown on the bill.",
+    ],
+    [
+      "18",
+      "Where should I stay in Tokyo?",
+      "Choose by transit access and the kind of evenings you want. Shinjuku and Shibuya are lively and well connected; Ueno and Asakusa can feel more traditional; Tokyo Station and Ginza are central and convenient. Staying near a useful station matters more than being beside every attraction.",
+    ],
+    [
+      "19",
+      "What neighborhoods should I visit besides Shibuya and Shinjuku?",
+      "Try Asakusa for historic streets, Ueno for museums and parks, Yanaka for a slower old-town walk, Daikanyama for design and cafes, Shimokitazawa for vintage shops and live music, or Kichijoji for Inokashira Park and local shopping.",
     ],
   ];
 
+  const categories = [
+    { id: "planning", label: "PLAN YOUR TRIP", questions: ["01", "02", "03", "04"] },
+    { id: "transit", label: "TRAINS & AIRPORTS", questions: ["05", "06", "07", "08", "09"] },
+    { id: "essentials", label: "MONEY & LANGUAGE", questions: ["10", "11", "12", "13"] },
+    { id: "culture", label: "LOCAL ETIQUETTE", questions: ["14", "15", "16", "17"] },
+    { id: "neighborhoods", label: "WHERE TO GO", questions: ["18", "19"] },
+  ];
+  const [activeCategory, setActiveCategory] = useState(categories[0].id);
   const [open, setOpen] = useState(null);
+  const activeFaqCategory = categories.find((category) => category.id === activeCategory) ?? categories[0];
+  const visibleQuestions = questions.filter(([number]) => activeFaqCategory.questions.includes(number));
 
   return (
     <>
@@ -1501,20 +2014,58 @@ function FAQ() {
       </section>
 
       <main className="faq-page">
-        {questions.map(([number, question, answer]) => (
-          <article className={`faq-item ${open === number ? "open" : ""}`} key={number}>
-            <button onClick={() => setOpen(open === number ? null : number)}>
-              <span>{number}</span>
-              <strong>{t(question)}</strong>
-              <i>{open === number ? "−" : "+"}</i>
-            </button>
-
-            <div className="faq-answer">
-              <p>{t(answer)}</p>
-            </div>
-          </article>
-        ))}
+        <div className="faq-explorer">
+          <div className="faq-category-tabs" role="tablist" aria-label={t("FAQ topics")}>
+            {categories.map((category) => (
+              <button
+                key={category.id}
+                id={`faq-tab-${category.id}`}
+                className={activeCategory === category.id ? "is-active" : ""}
+                type="button"
+                role="tab"
+                aria-selected={activeCategory === category.id}
+                aria-controls="faq-topic-panel"
+                onClick={() => {
+                  setActiveCategory(category.id);
+                  setOpen(null);
+                }}
+              >
+                {t(category.label)}
+              </button>
+            ))}
+          </div>
+          <div className="faq-cards" id="faq-topic-panel" role="tabpanel" aria-labelledby={`faq-tab-${activeCategory}`}>
+            {visibleQuestions.map(([number, question, answer]) => (
+              <article className={`faq-card${open === number ? " is-open" : ""}`} key={number}>
+                <button
+                  id={`faq-question-${number}`}
+                  type="button"
+                  aria-expanded={open === number}
+                  aria-controls={`faq-answer-${number}`}
+                  onClick={() => setOpen(open === number ? null : number)}
+                >
+                  <span>{number}</span>
+                  <strong>{t(question)}</strong>
+                  <i aria-hidden="true">{open === number ? "−" : "+"}</i>
+                </button>
+                <motion.div
+                  className="faq-card__answer-motion"
+                  id={`faq-answer-${number}`}
+                  aria-hidden={open !== number}
+                  initial={false}
+                  animate={{ height: open === number ? "auto" : 0, opacity: open === number ? 1 : 0 }}
+                  transition={{ duration: reduceMotion ? 0 : 0.28, ease: "easeInOut" }}
+                  style={{ overflow: "hidden" }}
+                >
+                  <div className="faq-card__answer"><p>{t(answer)}</p></div>
+                </motion.div>
+              </article>
+            ))}
+          </div>
+        </div>
       </main>
+
+      <TaxFreeSection />
 
       <Footer />
     </>
@@ -1523,53 +2074,88 @@ function FAQ() {
 
 function ReachOut() {
   const t = useCopy();
+  const [activeReachPhoto, setActiveReachPhoto] = useState(0);
+  const reachPhotos = places.slice(0, 6);
+
+  useEffect(() => {
+    const timer = window.setInterval(() => {
+      setActiveReachPhoto((current) => (current + 1) % reachPhotos.length);
+    }, 5000);
+    return () => window.clearInterval(timer);
+  }, [reachPhotos.length]);
+
+  const photo = reachPhotos[activeReachPhoto];
+
   return (
     <>
-      <section className="page-hero reach-hero">
-        <span className="section-label">{t("TOKYO / CONNECTION")}</span>
-
-        <h1>
-          {t("LET'S")}
-          <br />
-          <span>{t("TALK.")}</span>
-        </h1>
-
-        <p>{t("Have a question, idea or just want to say hello?")}</p>
-      </section>
-
-      <main className="reach-page">
-        <form className="contact-form" onSubmit={(event) => event.preventDefault()}>
-          <label>
-            <span>{t("01 / NAME")}</span>
-            <input type="text" placeholder={t("Your name")} />
-          </label>
-
-          <label>
-            <span>{t("02 / EMAIL")}</span>
-            <input type="email" placeholder={t("you@email.com")} />
-          </label>
-
-          <label>
-            <span>{t("03 / MESSAGE")}</span>
-            <textarea placeholder={t("Write something...")} rows="5" />
-          </label>
-
-          <button type="submit" className="submit-button">
-            {t("SEND MESSAGE")} <span>↗</span>
-          </button>
-        </form>
-
-        <div className="reach-side">
-          <span className="section-label">{t("CONTACT")}</span>
-
-          <a href="mailto:hello@example.com">hello@example.com</a>
-
-          <div className="social-links">
-            <a href="#">{t("INSTAGRAM")}</a>
-            <a href="#">{t("FACEBOOK")}</a>
-            <a href="#">{t("GITHUB")}</a>
+      <main className="reach-page reach-page--split">
+        <section className="reach-panel">
+          <div className="reach-panel__heading">
+            <span className="section-label">{t("TOKYO / CONNECTION")}</span>
+            <h1>{t("LET'S")}<br /><span>{t("TALK.")}</span></h1>
+            <p>{t("Have a question, idea or just want to say hello?")}</p>
           </div>
-        </div>
+
+          <form className="contact-form" onSubmit={(event) => event.preventDefault()}>
+            <label>
+              <span>{t("01 / NAME")}</span>
+              <input type="text" placeholder={t("Your name")} autoComplete="name" />
+            </label>
+
+            <label>
+              <span>{t("02 / EMAIL")}</span>
+              <input type="email" placeholder={t("you@email.com")} autoComplete="email" />
+            </label>
+
+            <label>
+              <span>{t("03 / MESSAGE")}</span>
+              <textarea placeholder={t("Write something...")} rows="4" />
+            </label>
+
+            <button type="submit" className="submit-button">
+              {t("SEND MESSAGE")} <span aria-hidden="true">↗</span>
+            </button>
+          </form>
+
+          <div className="reach-side">
+            <span className="section-label">{t("CONTACT")}</span>
+            <a href="mailto:hello@example.com">hello@example.com</a>
+            <div className="social-links">
+              <a href="#">{t("INSTAGRAM")}</a>
+              <a href="#">{t("FACEBOOK")}</a>
+              <a href="#">{t("GITHUB")}</a>
+            </div>
+          </div>
+        </section>
+
+        <aside className="reach-visual" aria-label={t("Scenes from Tokyo, Japan") }>
+          <AnimatePresence initial={false}>
+            <motion.div
+              key={activeReachPhoto}
+              className="reach-visual__slide"
+              initial={{ opacity: 0, scale: 1.025 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 1.35, ease: "easeInOut" }}
+            >
+              <OptimizedImage
+                className="reach-visual__photo"
+                src={photo.image}
+                alt={`${photo.name}, Japan`}
+                priority={activeReachPhoto === 0}
+                loading={activeReachPhoto === 0 ? "eager" : "lazy"}
+                sizes="(max-width: 850px) 100vw, 58vw"
+              />
+            </motion.div>
+          </AnimatePresence>
+          <div className="reach-visual__wash" aria-hidden="true" />
+          <div className="reach-visual__caption" aria-live="polite">
+            <span>{t("JAPAN / TOKYO")} · {photo.number} / 06</span>
+            <h2>{t(photo.name)}</h2>
+            <p>{t(photo.description)}</p>
+          </div>
+          <span className="reach-visual__stamp" aria-hidden="true">桜<br />東京</span>
+        </aside>
       </main>
 
       <Footer />
@@ -1609,28 +2195,34 @@ function Footer() {
   const t = useCopy();
   return (
     <footer className="site-footer">
-      <div className="footer-top">
-        <span>{t("TOKYO")}</span>
-        <span>35°39′N / 139°42′E</span>
-      </div>
-
-      <div className="footer-title">
-        <span>{t("BEYOND")}</span>
-        <span>{t("THE CITY.")}</span>
-      </div>
-
-      <div className="footer-bottom">
-        <span>{t("© 2026 TOKYO — BEYOND THE CITY")}</span>
-
-        <div>
-          <a href="/#find-your-way">{t("FIND YOUR WAY")}</a>
-          <a href="/things-to-do">{t("THINGS TO DO")}</a>
-          <a href="/train">{t("TRAIN")}</a>
-          <a href="/gallery">{t("GALLERY")}</a>
+      <div className="footer-brand-mark" aria-hidden="true">T</div>
+      <p className="footer-kicker">{t("TOKYO / BEYOND THE CITY")}</p>
+      <div className="footer-link-groups">
+        <nav aria-label={t("Places to explore")}>
+          <h2>{t("EXPLORE TOKYO")}</h2>
+          <a href="/things-to-do#places-to-go">{t("WHERE TO GO")}</a>
+          <a href="/things-to-do#food">{t("FOOD")}</a>
+          <a href="/things-to-do#shopping">{t("SHOPPING")}</a>
+          <a href="/things-to-do#day-trips">{t("DAY TRIPS")}</a>
+        </nav>
+        <nav aria-label={t("Travel guides")}>
+          <h2>{t("TRAVEL GUIDES")}</h2>
+          <a href="/train">{t("TRAIN GUIDE")}</a>
           <a href="/faq">{t("FAQ")}</a>
+          <a href="/#find-your-way">{t("FIND YOUR WAY")}</a>
+        </nav>
+        <nav aria-label={t("More from Tokyo")}>
+          <h2>{t("MORE")}</h2>
+          <a href="/">{t("HOME")}</a>
+          <a href="/gallery">{t("GALLERY")}</a>
           <a href="/reach-out">{t("REACH OUT")}</a>
           <a href="/settings">{t("SETTINGS")}</a>
-        </div>
+        </nav>
+      </div>
+      <div className="footer-rule" aria-hidden="true" />
+      <div className="footer-bottom">
+        <span>{t("© 2026 TOKYO — BEYOND THE CITY")}</span>
+        <span>35°39′N / 139°42′E</span>
       </div>
     </footer>
   );
@@ -1643,6 +2235,11 @@ function App() {
     localStorage.removeItem("tokyo-theme");
   }, []);
   const [musicActive, setMusicActive] = useState(false);
+  const [playerMinimized, setPlayerMinimized] = useState(false);
+  const openMusicPlayer = () => {
+    setMusicActive(true);
+    setPlayerMinimized(false);
+  };
   const [path, setPath] = useState(window.location.pathname);
   const [transitioning, setTransitioning] = useState(false);
   const [hiragana, setHiragana] = useState(() => localStorage.getItem("tokyo-language") === "hiragana");
@@ -1690,18 +2287,20 @@ function App() {
       <div className={`route-wipe ${transitioning ? "is-active" : ""}`} aria-hidden={!transitioning}>
         {transitioning && <FlowerLoader />}
       </div>
-      <Header onMenu={() => setMenuOpen((open) => !open)} onPlay={() => setMusicActive(true)} path={path} menuOpen={menuOpen} />
+      <Header onMenu={() => setMenuOpen((open) => !open)} onPlay={openMusicPlayer} path={path} menuOpen={menuOpen} />
       <MobileMenu open={menuOpen} close={() => setMenuOpen(false)} path={path} />
       <div className="route-stage" key={path}>
-        <Routes path={path} onPlay={() => setMusicActive(true)} musicActive={musicActive} hiragana={hiragana} onSelectLanguage={setHiragana} />
+        <Routes path={path} onPlay={openMusicPlayer} musicActive={musicActive} hiragana={hiragana} onSelectLanguage={setHiragana} />
       </div>
       {musicActive && (
-        <aside className="persistent-player persistent-player-open" aria-label={appCopy("Tokyo soundtrack player")}>
+        <aside className={`persistent-player persistent-player-open${playerMinimized ? " is-minimized" : ""}`} aria-label={appCopy("Tokyo soundtrack player")}>
           <div className="persistent-player-head">
             <span>{appCopy("wanna feel tokyo? / MAYONAKA NO DOOR")}</span>
+            <span className="player-playing-indicator" aria-hidden="true"><i /><i /><i /></span>
             <a className="player-play-link" href="https://audiomack.com/karlpotat0/song/mayonaka-no-doorstay-with-me" target="_blank" rel="noreferrer" aria-label={appCopy("PLAY") }>
               <span aria-hidden="true">▶</span> {appCopy("PLAY")}
             </a>
+            <button type="button" onClick={() => setPlayerMinimized((minimized) => !minimized)} aria-label={appCopy(playerMinimized ? "Expand player" : "Minimize player")} aria-expanded={!playerMinimized}>{playerMinimized ? "＋" : "−"}</button>
             <button type="button" onClick={() => setMusicActive(false)} aria-label={appCopy("Close player")}>×</button>
           </div>
           <iframe

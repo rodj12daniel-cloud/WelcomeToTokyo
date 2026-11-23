@@ -28,8 +28,8 @@ import "./styles.css";
 
 gsap.registerPlugin(ScrollTrigger);
 
-const HiraganaContext = createContext(false);
-const hiraganaCopy = {
+const JapaneseContext = createContext(false);
+const japaneseCopy = {
   TOKYO: "とうきょう",
   HOME: "ほーむ",
   "THINGS TO DO": "とうきょうですること",
@@ -45,11 +45,15 @@ const hiraganaCopy = {
   "Open menu": "めにゅーをひらく",
   "Close menu": "めにゅーをとじる",
   English: "えいご",
-  Japanese: "にほんご",
+  Japanese: "日本語",
+  "Use Japanese across the site": "サイト全体の表示を日本語に切り替えます",
+  "Switch the site's visible copy to standard Japanese using kanji, katakana, and hiragana.": "サイト内の文章を、漢字・カタカナ・ひらがなを使った自然な日本語に切り替えます。",
+  "Japanese is on": "日本語表示中",
+  "Interface language": "表示言語",
   "Tokyo neighborhoods": "とうきょうのまち",
   "Street life": "まちのにぎわい",
   "Late trains": "よるのでんしゃ",
-  "A City of Many Sides | いろんなまちが、ひとつに。": "いろんなまちが、ひとつに。",
+  "A City of Many Sides | いろんなまちが、ひとつに。": "さまざまな表情を見せる街、東京。",
   "From the first train to the last glow of neon, Tokyo changes block by block. Take a crossing, a quiet garden, a narrow lane. The best route is the one that lets you wander.": "はつでんからねおんがきえるころまで、とうきょうはまちかどごとにかおをかえます。こうさてんをわたり、しずかなにわやほそいろじをあるく。よりみちできるみちが、いちばんのるーとです。",
   "Find your own pace in Tokyo.": "とうきょうで、じぶんのぺーすをみつけよう。",
   "TOKYO, JAPAN": "にほん、とうきょう",
@@ -148,74 +152,8 @@ const places = [
   },
 ];
 
-const activities = [
-  {
-    category: "FOOD",
-    title: "Eat your way through Tokyo",
-    text: "Ramen, sushi counters, konbini runs and late-night bites. Tokyo rewards following the smell down the side street.",
-    location: "TOKYO",
-    hours: "VARIES",
-    image: "https://images.pexels.com/photos/29502503/pexels-photo-29502503.jpeg?cs=srgb&fm=jpg",
-    fit: "cover",
-  },
-  {
-    category: "CULTURE",
-    title: "Walk through Meiji Jingu",
-    text: "Leave the noise behind and walk beneath the enormous torii gates and forest canopy.",
-    location: "MEIJI JINGU",
-    hours: "SUNRISE → SUNSET",
-    image: "https://upload.wikimedia.org/wikipedia/commons/b/bf/Meiji_Jingu_Shrine._Saki_Barrels._%2827915377617%29.jpg",
-    fit: "cover",
-  },
-  {
-    category: "SHOPPING",
-    title: "Explore Harajuku",
-    text: "Street fashion, independent shops, coffee and the lively lanes around Takeshita and Cat Street.",
-    location: "HARAJUKU",
-    hours: "VARIES",
-    image: "https://static.gltjp.com/glt/data/directory/16000/15748/20240601_200047_ccb5f21c_w1920.webp",
-    fit: "cover",
-  },
-  {
-    category: "NIGHTLIFE",
-    title: "See Shibuya after dark",
-    text: "Cross the scramble, follow the neon and discover the streets beyond the famous intersection.",
-    location: "SHIBUYA",
-    hours: "OPEN LATE",
-    image: "https://images.pexels.com/photos/35827257/pexels-photo-35827257.jpeg?cs=srgb&dl=pexels-margo-evardson-2158292018-35827257.jpg&fm=jpg",
-    fit: "cover",
-  },
-  {
-    category: "NATURE",
-    title: "Slow down in Tokyo",
-    text: "Yoyogi Park and the green spaces around Meiji create a completely different rhythm from the city center.",
-    location: "YOYOGI / SHIBUYA",
-    hours: "OPEN DAILY",
-    image: "https://images.pexels.com/photos/31298878/pexels-photo-31298878.jpeg?cs=srgb&fm=jpg",
-    fit: "cover",
-  },
-  {
-    category: "EXPERIENCES",
-    title: "See Tokyo from above",
-    text: "Look across the skyline from Tokyo Skytree and watch the city change with the light.",
-    location: "SUMIDA",
-    hours: "VARIES",
-    image: "https://images.pexels.com/photos/31415739/pexels-photo-31415739.jpeg?cs=srgb&fm=jpg",
-    fit: "contain",
-  },
-  {
-    category: "EXPERIENCES",
-    title: "See Tokyo Tower at twilight",
-    text: "Watch Minato shift from daylight to neon around one of Tokyo's most recognizable towers.",
-    location: "MINATO",
-    hours: "VARIES",
-    image: "https://images.pexels.com/photos/19035824/pexels-photo-19035824.jpeg?cs=srgb&fm=jpg",
-    fit: "contain",
-  },
-];
-const extendedHiraganaCopy = {
+const extendedJapaneseCopy = {
   "CHECK LIVE ROUTE IN GOOGLE MAPS ↗": "ぐーぐるまっぷでろせんをみる ↗",
-  "05 / PAYMENT": "05 / しはらい",
   "SUICA / PASMO": "すいか / ぱすも",
   CONTACTLESS: "たっちけっさい",
   CASH: "げんきん",
@@ -275,7 +213,6 @@ const extendedHiraganaCopy = {
   "A seaside town known for its Great Buddha, temples and relaxed coastal streets.": "だいぶつやおてら、のんびりしたうみべのまちでしられています。",
   "A lakeside escape with clear views of Mount Fuji and a scenic local railway.": "ふじさんのけしきとろーかるせんがたのしめる、みずうみのまちです。",
   "Twelve scenes, from Shibuya after dark to Kamakura's coast and Mount Fuji.": "よるのしぶやから、かまくらのうみべ、ふじさんまで。12のけしき。",
-  "12 FRAMES / TOKYO + DAY TRIPS": "12まい / とうきょう と にちがえり",
   "KAMAKURA COAST": "かまくらのうみべ",
   "FUJI / LAKE KAWAGUCHI": "ふじさん / かわぐちこ",
   "Kamakura, Kanagawa": "かながわ、かまくら",
@@ -392,8 +329,6 @@ const extendedHiraganaCopy = {
   "TO DO.": "してみよう。",
   "12 FRAMES / TOKYO + DAY TRIPS": "12まい / とうきょう と にちがえり",
   "TOKYO / PLACE GUIDE": "とうきょう / ばしょ",
-  "08 / SHOPPING": "08 / かいもの",
-  "09 / TAX-FREE — UPDATED 2026": "09 / めんぜい — 2026ねんこうしん",
   NOVEMBER: "11がつ",
   "MATTERS.": "かわります。",
   "MEIJI JINGU": "めいじじんぐう",
@@ -437,9 +372,652 @@ const extendedHiraganaCopy = {
   "JR East, Tokyo Metro, Toei Subway and private railways operate separate networks. The map below is a tourist-focused visual guide, not a live timetable.": "じぇいあーる、とうきょうめとろ、とえいちかてつ、みんえいてつどうはそれぞれべつのろせんです。このちずはりょこうしゃむけのあんないで、じこくひょうではありません。",
 };
 
+const japaneseUiOverrides = {
+  "01 / LANGUAGE": "01 / 言語",
+  "A visual journey through the neighborhoods, streets, temples, food and quiet corners that make Tokyo impossible to experience in just one way.": "街並みや路地、寺社、食、静かな場所を巡り、多彩な東京を体験する旅。",
+  "ALL LINES": "全路線",
+  AREA: "エリア",
+  "Adult fares vary by route. Check the fare for your exact stations before travel.": "大人運賃は路線によって異なります。乗車前に利用する駅間の運賃をご確認ください。",
+  "BEST TIME": "おすすめの時間帯",
+  BEYOND: "その先へ",
+  "Change live camera": "ライブカメラを切り替える",
+  "Choose a map marker": "地図上のマーカーを選択",
+  "Close day trip details": "日帰り旅行の詳細を閉じる",
+  "Close food details": "料理の詳細を閉じる",
+  "Close photo viewer": "写真を閉じる",
+  "Close railway map": "鉄道路線図を閉じる",
+  "Close store list": "店舗一覧を閉じる",
+  "Crossings, quiet paths, late trains and the neighborhoods in between.": "交差点、静かな小道、夜の電車。その間に広がる街。",
+  "DAY TRIPS": "日帰り旅行",
+  "Different sides.": "さまざまな表情。",
+  "EXPLORE TOKYO": "東京を巡る",
+  "FAQ topics": "よくある質問のトピック",
+  "FIND YOUR": "自分だけの",
+  "FIVE PLACES / ONE CITY": "5つの場所 / ひとつの街",
+  FOLLOW: "路線をたどる",
+  FOOD: "食",
+  "FOOD TO TRY": "食べてみたい料理",
+  FOODS: "料理",
+  "FROM HERE.": "ここから",
+  "Find on map": "地図で探す",
+  "Flat adult fare for most Toei bus services in central Tokyo.": "東京都心部の都営バスは、多くの路線で大人運賃が均一です。",
+  "Follow the steam, the charcoal and the small signs glowing after dark.": "湯気や炭火、夜に灯る小さな看板をたどってみましょう。",
+  "GO.": "出発。",
+  "GOOD SPOTS IN TOKYO": "東京のおすすめスポット",
+  "Hiragana is on": "日本語表示中",
+  "IC FARE ESTIMATE": "IC運賃の目安",
+  "IN TOKYO.": "東京で。",
+  "It is thousands of them.": "無数の街が集まっています。",
+  "JAPAN / TOKYO": "日本 / 東京",
+  "JR EAST": "JR東日本",
+  KNOW: "知っておきたい",
+  "KNOW THE": "知っておきたい",
+  "LET'S": "さあ、",
+  "LIVE MAP / TOKYO": "東京ライブマップ",
+  "METRO 24H": "東京メトロ24時間券",
+  MORE: "その他",
+  "Main navigation": "メインナビゲーション",
+  "Mapbox could not load. Check that your VITE_MAPBOX_TOKEN is valid.": "地図を読み込めませんでした。VITE_MAPBOX_TOKENの設定をご確認ください。",
+  "Metro fares shown are adult IC fares; paper ticket prices differ.": "表示運賃は大人用IC運賃です。紙のきっぷとは金額が異なります。",
+  "More from Tokyo": "東京のその他の情報",
+  "More navigation": "その他のメニュー",
+  "Next destinations": "次の行き先",
+  "Next live camera": "次のライブカメラ",
+  "Next photo": "次の写真",
+  "OPEN FULL MAP ↗": "路線図を大きく表示 ↗",
+  "OPEN IN MAP": "地図で開く",
+  "One city.": "ひとつの街。",
+  "Open Tokyo railway map": "東京の鉄道路線図を開く",
+  "Open the Tokyo soundtrack player": "東京の音楽プレーヤーを開く",
+  "Open wanna feel tokyo? music player": "音楽プレーヤーを開く",
+  "PLACES TO GO": "行きたい場所",
+  "Places to explore": "おすすめの場所",
+  "Places to go in Tokyo": "東京のおすすめスポット",
+  "Previous destinations": "前の行き先",
+  "Previous live camera": "前のライブカメラ",
+  "Previous photo": "前の写真",
+  "REFERENCE / RAIL NETWORK": "参考 / 鉄道路線網",
+  "SAMPLE ITINERARY": "モデルコース",
+  "SETTINGS / LANGUAGE": "設定 / 言語",
+  SHOPPING: "ショッピング",
+  "STORES IN": "店舗一覧 / ",
+  "Scenes from Tokyo, Japan": "東京の風景",
+  "Select a numbered marker to see what is nearby.": "番号付きのマーカーを選ぶと、周辺情報が表示されます。",
+  "Six city stops, from the bright crossing to a quiet shrine forest.": "にぎやかな交差点から静かな神社の森まで、東京の6つのスポット。",
+  "Six easy escapes when Tokyo calls for a different pace.": "東京から少し足を延ばして、いつもと違う時間を楽しむ6つの旅。",
+  "Switch the site's visible copy to Japanese written in Hiragana.": "サイト内の文章を、漢字・カタカナ・ひらがなを使った自然な日本語に切り替えます。",
+  "TALK.": "話す。",
+  "TAP.": "タッチ。",
+  "THE CITY.": "この街。",
+  "THE GALLERY": "ギャラリー",
+  "THE LINES.": "路線を。",
+  "TO THERE.": "あちらへ。",
+  "TO TRY.": "食べてみよう。",
+  "TOKYO / BEYOND THE CITY": "東京 / その先へ",
+  "TOKYO / CONNECTION": "東京 / アクセス",
+  "TOKYO / DAY TRIPS": "東京 / 日帰り旅行",
+  "TOKYO / EXPERIENCES": "東京 / 体験",
+  "TOKYO / FOOD": "東京 / 食",
+  "TOKYO / IN MOTION": "東京 / 動き続ける街",
+  "TOKYO / NAVIGATION": "東京 / ナビゲーション",
+  "TOKYO / SOUNDTRACK": "東京 / サウンドトラック",
+  "TOKYO / TRANSPORT": "東京 / 交通",
+  "TOKYO METRO": "東京メトロ",
+  "TOKYO TRAIN GUIDE": "東京の鉄道ガイド",
+  "TRAIN GUIDE": "鉄道ガイド",
+  "TRAVEL GUIDES": "旅行ガイド",
+  "The rail network makes Tokyo easy to explore. Use the railway map for the big picture, then find these places on the live city map.": "鉄道路線網を使えば東京をスムーズに巡れます。路線図で全体を確認し、ライブマップで目的地を探しましょう。",
+  "Tokyo day trips": "東京発の日帰り旅行",
+  "Tokyo fare options": "東京の運賃",
+  "Tokyo is not one city.": "東京はひとつの街ではありません。",
+  "Tokyo photography": "東京の写真",
+  "Tokyo railway and metro network": "東京の鉄道・地下鉄路線網",
+  "Tokyo railway and metro network map": "東京の鉄道・地下鉄路線図",
+  "Tokyo railway map": "東京の鉄道路線図",
+  "Train lines, fares, passes and the simplest way to move around Tokyo.": "東京の路線、運賃、乗車券と、便利な移動方法を紹介します。",
+  "Travel guides": "旅行ガイド",
+  "Use Hiragana across the site": "サイト全体の表示を日本語に切り替えます",
+  "Valid on Tokyo Metro only; Toei Subway and JR are not included.": "東京メトロのみで利用できます。都営地下鉄とJRは対象外です。",
+  "WAY.": "道を。",
+  "WHERE TO GO": "行き先",
+  "photo viewer": "写真ビューアー",
+  "tokyo?": "東京？",
+  "wanna feel": "感じてみない？",
+  "© 2026 TOKYO — BEYOND THE CITY": "© 2026 東京 — その先へ",
+  "Shibuya Crossing": "渋谷スクランブル交差点",
+  NIGHT: "夜",
+  CULTURE: "文化",
+  CITY: "都市",
+  DESIGN: "デザイン",
+  RAIL: "鉄道",
+  NATURE: "自然",
+  "Tokyo Tower": "東京タワー",
+  "Tokyo Skytree": "東京スカイツリー",
+  "Meiji Jingu": "明治神宮",
+  "Harajuku": "原宿",
+  "Shinjuku": "新宿",
+  "Shibuya": "渋谷",
+  "Asakusa": "浅草",
+  "Ikebukuro": "池袋",
+  "Ueno": "上野",
+  "Akihabara": "秋葉原",
+  "Shinagawa": "品川",
+  "Ginza": "銀座",
+  "Roppongi": "六本木",
+  "Shimbashi": "新橋",
+  "Maihama": "舞浜",
+  "AIRPORT ACCESS": "空港アクセス",
+  "BEFORE YOU BOARD": "乗車前に",
+  "Browse the major Tokyo-area operators. Station lists below are key tourist stops and corridors, not every stop on each service.": "東京エリアの主要な鉄道事業者を紹介します。駅名は旅行者向けの主要駅で、各路線の全駅ではありません。",
+  "Check the operator's official website or airport station counter for tickets, boarding location, current fares and service.": "きっぷ、乗り場、最新の運賃や運行情報は、鉄道会社の公式サイトまたは空港駅の窓口でご確認ください。",
+  "Choose two different stations to plan a trip.": "出発駅と到着駅には異なる駅を選んでください。",
+  "Choose two stations to open a live transit planner. This site does not provide live schedules, fares, platform assignments, or disruptions.": "2つの駅を選ぶと、最新の経路検索を開けます。このサイトでは運行時刻、運賃、番線、運休情報を提供していません。",
+  "Directory reference only; detailed route geometry is not included on this map.": "路線一覧のみ掲載しています。詳細な線路形状は地図に表示していません。",
+  "Explore the railway map": "鉄道路線図を見る",
+  "FIND ROUTE": "経路を検索",
+  "FIRST-TIME VISITORS": "初めての方へ",
+  "Filter by train line": "路線で絞り込む",
+  "Filter map by operator": "鉄道会社で地図を絞り込む",
+  "Find your line": "利用する路線を探す",
+  "First time riding Tokyo trains?": "東京の電車に初めて乗りますか？",
+  "From the airport to Tokyo": "空港から東京へ",
+  "Highlight on map": "地図で路線を表示",
+  "ILLUSTRATIVE ROUTE GUIDANCE": "経路の参考情報",
+  "INTERACTIVE NETWORK": "インタラクティブ路線図",
+  "JR East": "JR東日本",
+  "LINE DIRECTORY": "路線一覧",
+  Legend: "凡例",
+  "Lines & station codes": "路線と駅番号",
+  "Map coverage": "地図の掲載範囲",
+  "Map tiles © OpenStreetMap contributors. Station pins indicate approximate station areas.": "地図タイル © OpenStreetMap contributors。駅のマーカーは駅周辺のおおよその位置です。",
+  "Mapped key stops": "地図に表示する主な駅",
+  "Navigate Tokyo like a local. Understand the train lines, discover stations, and find your way around Japan's extensive railway network.": "路線や駅を知って、東京の鉄道網を使いこなしましょう。地元の人のように日本の首都を巡るためのガイドです。",
+  Nearby: "周辺の見どころ",
+  "No matching railway lines.": "該当する路線がありません。",
+  "No matching stations or lines.": "該当する駅や路線がありません。",
+  "No route details are stored for this station pair. Use the live planner below for current options.": "この駅間の経路情報は掲載していません。最新の経路は下の検索をご利用ください。",
+  "Open Google Maps Transit ↗": "Google マップで経路を検索 ↗",
+  "Open station in Google Maps ↗": "駅をGoogle マップで開く ↗",
+  "Plan a journey": "経路を調べる",
+  "Popular journeys": "よく使う経路",
+  "ROUTE FINDER": "経路検索",
+  "Railway operators and airport access": "鉄道会社と空港アクセス",
+  "Reset map": "地図をリセット",
+  "STATION INFORMATION": "駅の情報",
+  "Search a station or train line...": "駅名または路線名で検索…",
+  "Search lines and destinations": "路線・行き先を検索",
+  "Selected stations only; intermediate stops are not shown.": "表示しているのは主な駅のみです。途中駅は省略しています。",
+  "Services, stopping patterns, prices and reservation rules can change. Confirm the current details with the operator before departure.": "運行区間、停車駅、料金、予約方法は変更されることがあります。出発前に鉄道会社の最新情報をご確認ください。",
+  Show: "表示",
+  "Start here.": "こちらから。",
+  Station: "駅",
+  "Station codes and line names shown are reference information; confirm signs at the station.": "駅番号と路線名は参考情報です。駅では案内表示をご確認ください。",
+  "Stations and lines": "駅と路線",
+  "TOKYO / RAILWAY GUIDE": "東京 / 鉄道ガイド",
+  "TOKYO RAILWAY GUIDE": "東京の鉄道ガイド",
+  "TOURIST SHORTCUTS": "旅行者向けの経路",
+  "This guide highlights eight selected corridors and visitor station areas: Yamanote, Ginza, Asakusa, Hibiya, Marunouchi, Hanzomon, Fukutoshin and Oedo. Colored links are simplified between mapped hubs, not complete track geometry. The map is not a full network, timetable, or live service feed.": "この地図では山手線、銀座線、浅草線、日比谷線、丸ノ内線、半蔵門線、副都心線、大江戸線の主要区間と駅周辺を紹介します。色付きの線は駅間を簡略化したもので、実際の線路形状や全路線、時刻表、運行情報を示すものではありません。",
+  "This is an illustrative suggestion, not a live route. Check station signs for the correct platform and current service.": "これは参考例であり、最新の経路案内ではありません。正しい番線と運行状況は駅の案内表示でご確認ください。",
+  "This line is listed in the directory, but is not included in the map overlay.": "この路線は一覧に掲載していますが、地図上では表示していません。",
+  "Toei Subway": "都営地下鉄",
+  "Tokyo Metro": "東京メトロ",
+  "Tokyo Metro and Toei Subway are separate operators with separate fares and station gates. Follow the operator and line signs when transferring.": "東京メトロと都営地下鉄は別の事業者で、運賃体系や改札も異なります。乗り換え時は事業者名と路線名の案内に従ってください。",
+  "Tokyo railway station": "東京の鉄道駅",
+  "Travel times, fares, transfers and platform information are not estimated here.": "所要時間、運賃、乗り換え回数、番線はここでは推定していません。",
+  "Type a line, code, or destination": "路線名・駅番号・行き先を入力",
+  "Visitor tip": "旅行者向けの案内",
+  "Zoom and drag the map. Select a station for visitor information or a highlighted line for its mapped stops.": "地図は拡大・縮小やドラッグができます。駅を選ぶと周辺情報、路線を選ぶと地図上の主な駅が表示されます。",
+  "line colors follow common operator line-color references where available. White circles mark selected station areas. Pan and zoom using the map controls.": "路線色は確認できる事業者の一般的な色分けを参考にしています。白い丸は主な駅周辺です。地図の操作ボタンで移動・拡大縮小できます。",
+  lines: "路線",
+  "the map shows selected station-to-station corridors, not full track geometry.": "地図では駅間の主な区間を簡略表示しており、実際の線路形状は示していません。",
+  "JR / urban and regional rail": "JR / 都市・近郊路線",
+  "Subway / nine lines": "地下鉄 / 9路線",
+  "Subway / four lines": "地下鉄 / 4路線",
+  "Regular rail, airport links and special transit": "一般鉄道・空港アクセス・新交通システム",
+  "Yamanote Line": "山手線",
+  "Chuo Rapid Line": "中央線快速",
+  "Chuo-Sobu Local Line": "中央・総武線各駅停車",
+  "Keihin-Tohoku Line": "京浜東北線",
+  "Saikyo Line": "埼京線",
+  "Shonan-Shinjuku Line": "湘南新宿ライン",
+  "Yokosuka Line": "横須賀線",
+  "Sobu Rapid Line": "総武線快速",
+  "Tokaido Line": "東海道線",
+  "Keiyo Line": "京葉線",
+  "Musashino Line": "武蔵野線",
+  "Ueno-Tokyo Line": "上野東京ライン",
+  "Joban Rapid Line": "常磐線快速",
+  "Joban Local Line": "常磐線各駅停車",
+  "Yokohama Line": "横浜線",
+  "Nambu Line": "南武線",
+  "Tozai Line": "東西線",
+  "Chiyoda Line": "千代田線",
+  "Yurakucho Line": "有楽町線",
+  "Namboku Line": "南北線",
+  "Mita Line": "三田線",
+  "Shinjuku Line": "新宿線",
+  "Odakyu Odawara Line": "小田急小田原線",
+  "Keio Line": "京王線",
+  "Keio Inokashira Line": "京王井の頭線",
+  "Seibu Shinjuku Line": "西武新宿線",
+  "Seibu Ikebukuro Line": "西武池袋線",
+  "Tobu Skytree Line": "東武スカイツリーライン",
+  "Tobu Tojo Line": "東武東上線",
+  "Tokyu Toyoko Line": "東急東横線",
+  "Tokyu Den-en-toshi Line": "東急田園都市線",
+  "Keikyu Line": "京急線",
+  "Keisei Line": "京成線",
+  "Tsukuba Express": "つくばエクスプレス",
+  "Rinkai Line": "りんかい線",
+  "Yurikamome Line": "ゆりかもめ",
+  "Tokyo Monorail": "東京モノレール",
+  "Nippori-Toneri Liner": "日暮里・舎人ライナー",
+  "Tokyo Sakura Tram (Toden Arakawa Line)": "東京さくらトラム（都電荒川線）",
+  "IC Cards": "ICカード",
+  "Understanding stations": "駅の利用方法",
+  "Train types": "列車の種類",
+  Transfers: "乗り換え",
+  "Train etiquette": "車内マナー",
+  "Last trains": "終電",
+  "JR Yamanote Line toward Shibuya / Shinagawa is a simple example; confirm the platform display.": "JR山手線の渋谷・品川方面が一例です。番線表示をご確認ください。",
+  "JR Yamanote Line; check the platform direction and current service.": "JR山手線を利用できます。番線の方面表示と運行状況をご確認ください。",
+  "JR Chuo Rapid Line is a common direct option; confirm the departure board.": "JR中央線快速が直通する一例です。発車案内をご確認ください。",
+  "Several transfers are possible; use a live planner for the best current route.": "複数の乗り換え経路があります。最新の経路はリアルタイム検索をご利用ください。",
+  "JR Chuo-Sobu Local Line is one direct option; check the platform and direction.": "JR中央・総武線各駅停車が直通する一例です。番線と方面をご確認ください。",
+  "Use a live planner for the nearest station and walking approach to your chosen tower entrance.": "目的地の入口に近い駅と徒歩経路は、最新の経路検索でご確認ください。",
+  "JR Yamanote Line is a common direct option; confirm the direction on the platform.": "JR山手線が直通する一例です。ホームで方面をご確認ください。",
+  "JR Keiyo Line serves Maihama for Tokyo Disney Resort; allow time to walk to the Keiyo platforms.": "JR京葉線で舞浜駅へ行けます。東京駅では京葉線ホームまでの移動時間にご注意ください。",
+  "Compare Narita Express and other current airport services using a live planner.": "成田エクスプレスなどの空港アクセスを、最新の経路検索で比較してください。",
+  "Compare current JR / Keikyu or monorail connections using a live planner.": "JR・京急・モノレールの最新の乗り継ぎを経路検索でご確認ください。",
+  "Open a topic for simple, practical advice.": "項目を開いて、簡単で実用的な案内をご覧ください。",
+  "Suica and PASMO are rechargeable IC cards used on most participating JR, subway and private railway services, plus many buses and shops.": "SuicaとPASMOは、JR、地下鉄、私鉄などの対応路線や多くのバス・店舗で使えるチャージ式ICカードです。",
+  "Buy or charge a card at a station ticket machine or service counter where available. Mobile card options depend on your device and region.": "駅の券売機や窓口で購入・チャージできます。モバイル版の利用可否は端末や地域によって異なります。",
+  "Tap once at the entry gate and tap again at the exit gate. Use the same card throughout the trip and keep it ready at the gate.": "改札の入場時と出場時に同じカードをタッチします。改札ではすぐ使えるように準備しましょう。",
+  "Station codes combine a line letter with a station number, such as JY20 or G01. Check the code and station name together.": "駅番号は路線記号と数字の組み合わせです（例：JY20、G01）。駅名とあわせて確認しましょう。",
+  "Line colors help identify a route, but always confirm the operator, line name and destination on signs and platform displays.": "路線色は目印になりますが、案内表示や発車標で事業者名・路線名・行き先も確認してください。",
+  "Platform signs show destinations and train types. Check the direction and stopping pattern before boarding.": "ホームの案内表示で行き先や列車種別を確認し、方面と停車駅を見てから乗車しましょう。",
+  "Local trains stop at every station on their route.": "各駅停車は、路線上のすべての駅に停車します。",
+  "Rapid and express services skip some stations. Limited Express trains may require a separate limited-express ticket or seat reservation.": "快速や急行は一部の駅を通過します。特急では別途特急券や座席指定が必要な場合があります。",
+  "Always check the station's stopping pattern; not every train stops at every station.": "すべての列車が各駅に停車するわけではありません。停車駅を必ずご確認ください。",
+  "JR, Tokyo Metro, Toei and private railways are separate operators. Follow signs for the exact line and operator when transferring.": "JR、東京メトロ、都営地下鉄、私鉄は別々の事業者です。乗り換え時は路線名と事業者名の案内に従ってください。",
+  "Look for transfer signs and line colors. Some transfers require exiting one fare area or walking between nearby station buildings.": "乗り換え案内と路線色を確認してください。改札を出たり、駅舎間を歩いたりする場合があります。",
+  "When using an IC card, follow the transfer gates and signs so your fare is recorded correctly.": "ICカード利用時は、運賃が正しく記録されるよう乗り換え改札と案内表示に従ってください。",
+  "Queue behind the marked lines, let passengers exit first, and keep doorways clear.": "乗車位置の表示に沿って並び、降車する人を先に通し、ドア付近を空けましょう。",
+  "Keep conversations quiet, avoid phone calls, and keep luggage close without blocking seats or aisles.": "会話は控えめにし、車内通話は避けましょう。荷物は座席や通路をふさがないようにしてください。",
+  "Follow each station's escalator guidance; local customs vary by area and can change during busy periods.": "エスカレーターは駅ごとの案内に従ってください。地域や混雑状況によって利用方法が異なる場合があります。",
+  "Tokyo trains do not run 24 hours. Check the last departure for your exact route before going out, especially late at night.": "東京の電車は24時間運行ではありません。特に夜遅くに出かける際は、利用する経路の終電を確認しましょう。",
+  "Service times, platforms and disruptions change. Use an official operator planner or Google Maps Transit for current journey planning.": "運行時刻、番線、運休情報は変わります。最新の経路検索には鉄道会社の公式案内やGoogle マップをご利用ください。",
+  "Narita Express (N'EX)": "成田エクスプレス（N'EX）",
+  "Keisei Skyliner": "京成スカイライナー",
+  "Keisei Access Express": "京成アクセス特急",
+  "Keikyu Airport Line": "京急空港線",
+  "JR service to major terminals including Tokyo, Shinagawa, Shibuya and Shinjuku; check the current train pattern and reservation requirements.": "東京、品川、渋谷、新宿などへ向かうJRの列車です。運行区間と指定席の条件は最新情報をご確認ください。",
+  "Limited Express service between Narita Airport and Keisei-Ueno / Nippori; reserved seating and separate ticket.": "成田空港と京成上野・日暮里を結ぶ特急列車です。座席指定と別途乗車券が必要です。",
+  "Through services may continue onto the Toei Asakusa Line and other lines; destination varies by service.": "都営浅草線などへの直通列車があります。行き先は列車によって異なります。",
+  "Connects the airport with Shinagawa and offers through services; confirm the destination shown on the train.": "空港と品川を結び、他路線への直通列車もあります。列車の行き先表示をご確認ください。",
+  "Connects the airport with Hamamatsucho, where JR Yamanote and Keihin-Tohoku services are available.": "空港と浜松町を結び、浜松町ではJR山手線・京浜東北線に乗り換えられます。",
+  "NARITA AIRPORT": "成田空港",
+  "HANEDA AIRPORT": "羽田空港",
+  "Shinjuku Gyoen, Kabukicho, Tokyo Metropolitan Government Building": "新宿御苑、歌舞伎町、東京都庁",
+  "Shinjuku Station is very large; follow the operator and exit signs for your destination.": "新宿駅は広大です。利用する事業者と目的地に合った出口の案内に従ってください。",
+  "Shibuya Scramble Crossing, Shibuya Sky, Hachiko Memorial Statue": "渋谷スクランブル交差点、渋谷スカイ、忠犬ハチ公像",
+  "Use the Hachiko Exit for the Scramble Crossing.": "スクランブル交差点へはハチ公改札・ハチ公口をご利用ください。",
+  "Meiji Jingu, Takeshita Street, Omotesando": "明治神宮、竹下通り、表参道",
+  "Meiji-jingumae is a separate nearby station served by Tokyo Metro.": "明治神宮前駅は近隣にある別の東京メトロの駅です。",
+  "Tokyo Station Marunouchi Building, Imperial Palace East Gardens": "東京駅丸の内駅舎、皇居東御苑",
+  "Use the Marunouchi side for the historic station building and the Yaesu side for many Shinkansen gates.": "歴史的な駅舎へは丸の内側、新幹線改札へは八重洲側の案内をご確認ください。",
+  "Ueno Park, Tokyo National Museum, Ameyoko": "上野公園、東京国立博物館、アメ横",
+  "Ueno Park and museums are on the Park side of the JR station.": "上野公園や博物館へはJR駅の公園口側が便利です。",
+  "Sunshine City, Ikebukuro shopping district": "サンシャインシティ、池袋の繁華街",
+  "The station has several operators; check the operator name before entering a gate.": "複数の事業者が乗り入れています。改札に入る前に事業者名をご確認ください。",
+  "Shinagawa Station area, Takanawa Gateway": "品川駅周辺、高輪ゲートウェイ",
+  "Keikyu platforms connect the station area with Haneda Airport services.": "京急のホームから羽田空港方面の列車に乗車できます。",
+  "Akihabara Electric Town, Kanda Myojin": "秋葉原電気街、神田明神",
+  "Use the Electric Town Exit for the main electronics and anime shopping streets.": "電気街やアニメ関連の店舗へは電気街口をご利用ください。",
+  "Ginza shopping district, Kabukiza Theatre": "銀座の繁華街、歌舞伎座",
+  "Ginza and Higashi-ginza are connected by underground passages but are separate stations.": "銀座駅と東銀座駅は地下通路でつながっていますが、別の駅です。",
+  "Senso-ji, Kaminarimon, Nakamise Street": "浅草寺、雷門、仲見世通り",
+  "Follow signs for Kaminarimon and Senso-ji; several operators have separate gates.": "雷門・浅草寺方面の案内をご確認ください。事業者ごとに改札が異なります。",
+  "Roppongi Hills, Mori Art Museum, Tokyo Midtown": "六本木ヒルズ、森美術館、東京ミッドタウン",
+  "Roppongi Hills and Tokyo Midtown are in different directions from the station.": "六本木ヒルズと東京ミッドタウンは駅から別方向にあります。",
+  "Shiodome, Hamarikyu Gardens, gateway to Odaiba": "汐留、浜離宮恩賜庭園、お台場への乗換駅",
+  "Yurikamome has its own station and gate area; follow the dedicated signs.": "ゆりかもめは駅と改札が別です。専用の案内表示に従ってください。",
+  "Odaiba Seaside Park, waterfront museums and shopping": "お台場海浜公園、臨海部の美術館、ショッピング施設",
+  "Odaiba has several stations; choose the one closest to your destination.": "お台場には複数の駅があります。目的地に近い駅をお選びください。",
+  "Tokyo Disney Resort": "東京ディズニーリゾート",
+  "Follow the resort signs from the south side of the station.": "駅の南側からリゾート方面の案内に従ってください。",
+  "Tokyo Skytree, Tokyo Solamachi": "東京スカイツリー、東京ソラマチ",
+  "Oshiage is the station name for Tokyo Skytree; follow the Skytree exit signs.": "東京スカイツリーの最寄り駅名は押上です。スカイツリー方面の出口案内に従ってください。",
+};
+
+const japaneseDynamicCopy = {
+  "PRIVATE RAILWAYS & SPECIAL TRANSIT": "私鉄・空港アクセス・新交通システム",
+  "Yamanote Line": "山手線",
+  "Chuo Rapid Line": "中央線快速",
+  "Chuo-Sobu Local Line": "中央・総武線各駅停車",
+  "Keihin-Tohoku Line": "京浜東北線",
+  "Saikyo Line": "埼京線",
+  "Shonan-Shinjuku Line": "湘南新宿ライン",
+  "Yokosuka Line": "横須賀線",
+  "Sobu Rapid Line": "総武線快速",
+  "Tokaido Line": "東海道線",
+  "Keiyo Line": "京葉線",
+  "Musashino Line": "武蔵野線",
+  "Ueno-Tokyo Line": "上野東京ライン",
+  "Joban Rapid Line": "常磐線快速",
+  "Joban Local Line": "常磐線各駅停車",
+  "Yokohama Line": "横浜線",
+  "Nambu Line": "南武線",
+  "Ginza Line": "銀座線",
+  "Marunouchi Line": "丸ノ内線",
+  "Hibiya Line": "日比谷線",
+  "Tozai Line": "東西線",
+  "Chiyoda Line": "千代田線",
+  "Yurakucho Line": "有楽町線",
+  "Hanzomon Line": "半蔵門線",
+  "Namboku Line": "南北線",
+  "Fukutoshin Line": "副都心線",
+  "Asakusa Line": "浅草線",
+  "Mita Line": "三田線",
+  "Shinjuku Line": "新宿線",
+  "Oedo Line": "大江戸線",
+  "Odakyu Odawara Line": "小田急小田原線",
+  "Keio Line": "京王線",
+  "Keio Inokashira Line": "京王井の頭線",
+  "Seibu Shinjuku Line": "西武新宿線",
+  "Seibu Ikebukuro Line": "西武池袋線",
+  "Tobu Skytree Line": "東武スカイツリーライン",
+  "Tobu Tojo Line": "東武東上線",
+  "Tokyu Toyoko Line": "東急東横線",
+  "Tokyu Den-en-toshi Line": "東急田園都市線",
+  "Keikyu Line": "京急線",
+  "Keisei Line": "京成線",
+  "Tsukuba Express": "つくばエクスプレス",
+  "Rinkai Line": "りんかい線",
+  "Yurikamome Line": "ゆりかもめ",
+  "Tokyo Monorail": "東京モノレール",
+  "Nippori-Toneri Liner": "日暮里・舎人ライナー",
+  "Tokyo Sakura Tram (Toden Arakawa Line)": "東京さくらトラム（都電荒川線）",
+  "Tokyo's circular line; Shinjuku, Shibuya, Harajuku, Tokyo, Ueno and Ikebukuro.": "東京を環状に走る路線で、新宿、渋谷、原宿、東京、上野、池袋などを結びます。",
+  "Tokyo–Shinjuku–Tachikawa–Hachioji; faster service with fewer stops than the local service.": "東京・新宿から立川・八王子方面へ向かう快速列車です。各駅停車より停車駅が少なく、速く移動できます。",
+  "Local service through Shinjuku, Akihabara and onward toward Chiba; stops more frequently than the Chuo Rapid.": "新宿、秋葉原を経由して千葉方面へ向かう各駅停車です。中央線快速より多くの駅に停車します。",
+  "Omiya–Ueno–Tokyo–Shinagawa–Yokohama corridor.": "大宮・上野・東京・品川・横浜を結ぶ路線です。",
+  "Omiya–Ikebukuro–Shinjuku–Shibuya–Osaki corridor.": "大宮・池袋・新宿・渋谷・大崎方面を結ぶ路線です。",
+  "Through service linking the Shinjuku area with destinations in the north and south.": "新宿エリアを経由し、北部・南部の各方面を結ぶ直通運転です。",
+  "Tokyo–Shinagawa and through service toward Yokosuka.": "東京・品川から横須賀方面へ直通運転しています。",
+  "Tokyo–Chiba rapid service; shares the JO station-code family with Yokosuka services.": "東京・千葉間の快速列車です。横須賀線と共通のJO駅番号を使用します。",
+  "Tokyo–Shinagawa and onward toward Yokohama and the Tokaido corridor.": "東京・品川から横浜や東海道方面へ向かいます。",
+  "Tokyo–Maihama (Tokyo Disney Resort)–Soga.": "東京・舞浜（東京ディズニーリゾート）・蘇我方面を結びます。",
+  "Suburban orbital service connecting western and eastern Tokyo-area railways.": "東京近郊の西部・東部の路線を結ぶ郊外環状路線です。",
+  "Through service connecting Ueno with Tokyo Station and southern lines.": "上野と東京駅を結び、南方面の路線へ直通します。",
+  "Ueno–Matsudo–Abiko–Toride corridor.": "上野・松戸・我孫子・取手方面を結びます。",
+  "Local service through the northern Tokyo suburbs, including Matsudo and Abiko.": "松戸・我孫子など東京北東部の近郊を走る各駅停車です。",
+  "Higashi-Kanagawa–Shin-Yokohama–Hachioji.": "東神奈川・新横浜・八王子方面を結びます。",
+  "Kawasaki–Musashi-Kosugi–Tachikawa.": "川崎・武蔵小杉・立川方面を結びます。",
+  "Shibuya–Ginza–Ueno–Asakusa.": "渋谷・銀座・上野・浅草を結びます。",
+  "Ikebukuro–Tokyo–Shinjuku.": "池袋・東京・新宿方面を結びます。",
+  "Naka-meguro–Roppongi–Ginza–Ueno.": "中目黒・六本木・銀座・上野方面を結びます。",
+  "Nakano–Otemachi–Nishi-funabashi.": "中野・大手町・西船橋を結びます。",
+  "Yoyogi-uehara–Omotesando–Otemachi–Kita-ayase.": "代々木上原・表参道・大手町・北綾瀬を結びます。",
+  "Wakoshi–Ikebukuro–Yurakucho–Shin-kiba.": "和光市・池袋・有楽町・新木場を結びます。",
+  "Shibuya–Otemachi–Oshiage.": "渋谷・大手町・押上を結びます。",
+  "Meguro–Nagatacho–Akabane-iwabuchi.": "目黒・永田町・赤羽岩淵を結びます。",
+  "Shibuya–Shinjuku-sanchome–Ikebukuro.": "渋谷・新宿三丁目・池袋を結びます。",
+  "Nishi-magome–Shimbashi–Asakusa–Oshiage.": "西馬込・新橋・浅草・押上を結びます。",
+  "Meguro–Hibiya–Otemachi–Nishi-takashimadaira.": "目黒・日比谷・大手町・西高島平を結びます。",
+  "Shinjuku–Jimbocho–Motoyawata.": "新宿・神保町・本八幡を結びます。",
+  "Looping route serving Shinjuku, Roppongi, Tsukiji and Ueno-okachimachi.": "新宿・六本木・築地・上野御徒町などを巡る環状路線です。",
+  "Shinjuku–Odawara; access toward Hakone and other western destinations.": "新宿・小田原間を結び、箱根など西方面へのアクセスに便利です。",
+  "Shinjuku–Keio-hachioji.": "新宿・京王八王子間を結びます。",
+  "Shibuya–Kichijoji.": "渋谷・吉祥寺間を結びます。",
+  "Seibu-shinjuku–Hon-kawagoe.": "西武新宿・本川越間を結びます。",
+  "Ikebukuro–Chichibu / western suburban destinations.": "池袋から秩父など西部の郊外へ向かいます。",
+  "Asakusa / Oshiage–Tobu-dobutsu-koen and beyond.": "浅草・押上から東武動物公園方面へ向かいます。",
+  "Ikebukuro–Kawagoe / Saitama destinations.": "池袋から川越など埼玉方面へ向かいます。",
+  "Shibuya–Yokohama; through services connect with the Fukutoshin Line.": "渋谷・横浜間を結び、副都心線との直通運転があります。",
+  "Shibuya–western suburbs; through services connect with the Hanzomon Line.": "渋谷から西部の郊外へ向かい、半蔵門線と直通運転しています。",
+  "Shinagawa–Haneda Airport and Yokohama directions.": "品川から羽田空港・横浜方面へ向かいます。",
+  "Keisei-ueno / Nippori–Narita Airport and Chiba.": "京成上野・日暮里から成田空港・千葉方面へ向かいます。",
+  "Akihabara–Tsukuba.": "秋葉原・つくば間を結びます。",
+  "Shin-kiba–Tokyo Teleport / Odaiba–Osaki.": "新木場・東京テレポート（お台場）・大崎方面を結びます。",
+  "Shimbashi–Odaiba–Toyosu; automated elevated transit.": "新橋・お台場・豊洲を結ぶ自動運転の高架交通システムです。",
+  "Hamamatsucho–Haneda Airport; airport monorail.": "浜松町・羽田空港間を結ぶ空港モノレールです。",
+  "Nippori–Minumadai-shinsuikōen; automated transit.": "日暮里・見沼代親水公園間を結ぶ自動運転の交通システムです。",
+  "Waseda–Minowabashi; street-running tram.": "早稲田・三ノ輪橋間を結ぶ路面電車です。",
+  "Meiji-jingumae": "明治神宮前",
+  "Nihombashi": "日本橋",
+  "Oshiage / Skytree": "押上 / スカイツリー",
+  "Daikanyama": "代官山",
+  "Shinjuku-sanchome": "新宿三丁目",
+  "Omote-sando": "表参道",
+  "Naka-meguro": "中目黒",
+  "Nishi-magome": "西馬込",
+  "Ueno-okachimachi": "上野御徒町",
+  "Ryogoku": "両国",
+  "Tokyo Tower": "東京タワー",
+  "Narita Airport": "成田空港",
+  "Haneda Airport": "羽田空港",
+  "JR Yamanote JY20": "JR山手線 JY20",
+  "JR Saikyo JA10": "JR埼京線 JA10",
+  "Ginza G01": "銀座線 G01",
+  "Hanzomon Z01": "半蔵門線 Z01",
+  "Fukutoshin F16": "副都心線 F16",
+  "Tokyu Toyoko TY01": "東急東横線 TY01",
+  "Tokyu Den-en-toshi DT01": "東急田園都市線 DT01",
+  "Keio Inokashira IN01": "京王井の頭線 IN01",
+  "JR Yamanote JY17": "JR山手線 JY17",
+  "JR Chuo Rapid JC05": "JR中央線快速 JC05",
+  "JR Chuo-Sobu JB10": "JR中央・総武線各駅停車 JB10",
+  "JR Saikyo JA11": "JR埼京線 JA11",
+  "Marunouchi M08": "丸ノ内線 M08",
+  "Toei Shinjuku S01": "都営新宿線 S01",
+  "Toei Oedo E27": "都営大江戸線 E27",
+  "JR Yamanote JY19": "JR山手線 JY19",
+  "Fukutoshin F15 (Meiji-jingumae)": "副都心線 F15（明治神宮前）",
+  "JR Yamanote JY01": "JR山手線 JY01",
+  "JR Chuo Rapid JC01": "JR中央線快速 JC01",
+  "JR Tokaido JT01": "JR東海道線 JT01",
+  "JR Ueno-Tokyo JU01": "JR上野東京ライン JU01",
+  "Marunouchi M17": "丸ノ内線 M17",
+  "JR Yamanote JY05": "JR山手線 JY05",
+  "JR Keihin-Tohoku JK30": "JR京浜東北線 JK30",
+  "JR Joban Rapid JJ01": "JR常磐線快速 JJ01",
+  "Ginza G16": "銀座線 G16",
+  "Hibiya H17": "日比谷線 H17",
+  "JR Yamanote JY13": "JR山手線 JY13",
+  "JR Saikyo JA12": "JR埼京線 JA12",
+  "Marunouchi M25": "丸ノ内線 M25",
+  "Fukutoshin F09": "副都心線 F09",
+  "Seibu Ikebukuro SI01": "西武池袋線 SI01",
+  "Tobu Tojo TJ01": "東武東上線 TJ01",
+  "JR Yamanote JY25": "JR山手線 JY25",
+  "JR Keihin-Tohoku JK20": "JR京浜東北線 JK20",
+  "JR Tokaido JT03": "JR東海道線 JT03",
+  "JR Yokosuka JO17": "JR横須賀線 JO17",
+  "Keikyu KK01": "京急線 KK01",
+  "JR Yamanote JY03": "JR山手線 JY03",
+  "JR Keihin-Tohoku JK28": "JR京浜東北線 JK28",
+  "JR Chuo-Sobu JB19": "JR中央・総武線各駅停車 JB19",
+  "Hibiya H16": "日比谷線 H16",
+  "Ginza G09": "銀座線 G09",
+  "Marunouchi M16": "丸ノ内線 M16",
+  "Hibiya H09": "日比谷線 H09",
+  "Asakusa A11 (Higashi-ginza)": "浅草線 A11（東銀座）",
+  "Ginza G19": "銀座線 G19",
+  "Toei Asakusa A18": "都営浅草線 A18",
+  "Tobu Skytree TS01": "東武スカイツリーライン TS01",
+  "Hibiya H04": "日比谷線 H04",
+  "Toei Oedo E23": "都営大江戸線 E23",
+  "JR Yamanote JY29": "JR山手線 JY29",
+  "JR Keihin-Tohoku JK24": "JR京浜東北線 JK24",
+  "Ginza G08": "銀座線 G08",
+  "Toei Asakusa A10": "都営浅草線 A10",
+  "Yurikamome U01": "ゆりかもめ U01",
+  "Yurikamome Daiba U07": "ゆりかもめ 台場 U07",
+  "Rinkai Tokyo Teleport R04 (nearby)": "りんかい線 東京テレポート R04（近隣）",
+  "JR Keiyo JE07": "JR京葉線 JE07",
+  "Hanzomon Z14": "半蔵門線 Z14",
+  "Toei Asakusa A20": "都営浅草線 A20",
+  "Tobu Skytree TS30": "東武スカイツリーライン TS30",
+};
+
+const kanaToJapaneseTerms = [
+  ["とうきょうすかいつりー", "東京スカイツリー"],
+  ["とうきょうめとろ", "東京メトロ"],
+  ["めいじじんぐう", "明治神宮"],
+  ["とえいちかてつ", "都営地下鉄"],
+  ["とうきょうちかてつ", "東京地下鉄"],
+  ["とうきょうたわー", "東京タワー"],
+  ["すくらんぶるこうさてん", "スクランブル交差点"],
+  ["すくらんぶる", "スクランブル"],
+  ["じんぐうまえ", "神宮前"],
+  ["しぶやぱるこ", "渋谷パルコ"],
+  ["おもてさんどう", "表参道"],
+  ["よよぎこうえん", "代々木公園"],
+  ["とうきょう", "東京"],
+  ["にほん", "日本"],
+  ["しぶや", "渋谷"],
+  ["あさくさ", "浅草"],
+  ["しんじゅく", "新宿"],
+  ["はらじゅく", "原宿"],
+  ["だいかんやま", "代官山"],
+  ["あきはばら", "秋葉原"],
+  ["かまくら", "鎌倉"],
+  ["かわぐちこ", "河口湖"],
+  ["ふじさん", "富士山"],
+  ["よよぎ", "代々木"],
+  ["ろっぽんぎ", "六本木"],
+  ["ぎんざ", "銀座"],
+  ["みなと", "港"],
+  ["すみだ", "墨田"],
+  ["たいとう", "台東"],
+  ["かながわ", "神奈川"],
+  ["やまなし", "山梨"],
+  ["でんきせいひん", "電気製品"],
+  ["でんとうこうげい", "伝統工芸"],
+  ["ちかてつ", "地下鉄"],
+  ["でんしゃ", "電車"],
+  ["ろせんず", "路線図"],
+  ["ろせん", "路線"],
+  ["うんちん", "運賃"],
+  ["じこくひょう", "時刻表"],
+  ["のりかえ", "乗り換え"],
+  ["しゅっぱつ", "出発"],
+  ["とうちゃく", "到着"],
+  ["きっぷ", "切符"],
+  ["えき", "駅"],
+  ["ちず", "地図"],
+  ["りょこうしゃ", "旅行者"],
+  ["りょこう", "旅行"],
+  ["めんぜい", "免税"],
+  ["しょうひぜい", "消費税"],
+  ["ぱすぽーと", "パスポート"],
+  ["こうしき", "公式"],
+  ["かくにん", "確認"],
+  ["よやく", "予約"],
+  ["えいぎょうじかん", "営業時間"],
+  ["こうにゅう", "購入"],
+  ["しはらい", "支払い"],
+  ["へんきん", "返金"],
+  ["たいしょう", "対象"],
+  ["おとな", "大人"],
+  ["こうつう", "交通"],
+  ["しょっぴんぐ", "ショッピング"],
+  ["ふぁっしょん", "ファッション"],
+  ["すとりーとうぇあ", "ストリートウェア"],
+  ["すにーかー", "スニーカー"],
+  ["びんてーじ", "ヴィンテージ"],
+  ["かめら", "カメラ"],
+  ["あくせさりー", "アクセサリー"],
+  ["ぶんぼうぐ", "文房具"],
+  ["でざいん", "デザイン"],
+  ["らいふすたいる", "ライフスタイル"],
+  ["ぶらんど", "ブランド"],
+  ["ひゃっかてん", "百貨店"],
+  ["こうきゅうひん", "高級品"],
+  ["おみやげ", "お土産"],
+  ["こうげいひん", "工芸品"],
+  ["きっちんようひん", "キッチン用品"],
+  ["でんき", "電気"],
+  ["ねおん", "ネオン"],
+  ["らいぶかめら", "ライブカメラ"],
+  ["めとろ", "メトロ"],
+  ["ばす", "バス"],
+  ["こんびに", "コンビニ"],
+  ["らーめん", "ラーメン"],
+  ["こーひー", "コーヒー"],
+  ["すし", "寿司"],
+  ["とりい", "鳥居"],
+  ["じんじゃ", "神社"],
+  ["おてら", "お寺"],
+  ["しばこうえん", "芝公園"],
+  ["こうさてん", "交差点"],
+  ["ひゃく", "百"],
+  ["よる", "夜"],
+  ["ひる", "昼"],
+  ["あさ", "朝"],
+  ["ゆうがた", "夕方"],
+  ["はる", "春"],
+  ["あき", "秋"],
+  ["なつ", "夏"],
+  ["ふゆ", "冬"],
+  ["もり", "森"],
+  ["にわ", "庭"],
+  ["みち", "道"],
+  ["まち", "街"],
+  ["けしき", "景色"],
+  ["じかん", "時間"],
+  ["ばしょ", "場所"],
+  ["かいもの", "買い物"],
+  ["たべもの", "食べ物"],
+  ["おかね", "お金"],
+  ["げんきん", "現金"],
+  ["のりほうだい", "乗り放題"],
+  ["みどり", "緑"],
+  ["しずか", "静か"],
+  ["でんとう", "伝統"],
+  ["しぜん", "自然"],
+  ["しつもん", "質問"],
+  ["なまえ", "名前"],
+  ["めーる", "メール"],
+  ["れんらく", "連絡"],
+  ["めっせーじ", "メッセージ"],
+  ["こーす", "コース"],
+  ["すらいど", "スライド"],
+  ["すわいぷ", "スワイプ"],
+  ["びゅー", "ビュー"],
+  ["ふぇすてぃばる", "フェスティバル"],
+  ["いんすたぐらむ", "Instagram"],
+  ["ふぇいすぶっく", "Facebook"],
+  ["ぎっとはぶ", "GitHub"],
+  ["ぐーぐるまっぷ", "Googleマップ"],
+  ["すいか", "Suica"],
+  ["ぱすも", "PASMO"],
+  ["あいしー", "IC"],
+  ["たっちけっさい", "タッチ決済"],
+  ["ふぁみりー", "ファミリー"],
+  ["ほてる", "ホテル"],
+  ["びる", "ビル"],
+  ["すかい", "スカイ"],
+  ["さくら", "桜"],
+  ["よくある", "よくある"],
+  ["おすすめ", "おすすめ"],
+  ["とうきょう", "東京"],
+];
+
+const kanaToJapaneseTermsSorted = [...kanaToJapaneseTerms].sort(([left], [right]) => right.length - left.length);
+
+function toJapaneseScript(text) {
+  return kanaToJapaneseTermsSorted.reduce((result, [kana, japanese]) => result.replaceAll(kana, japanese), text);
+}
+
+function getJapaneseCopy(text) {
+  return japaneseUiOverrides[text] ?? japaneseDynamicCopy[text] ?? toJapaneseScript(extendedJapaneseCopy[text] ?? japaneseCopy[text] ?? text);
+}
+
 function useCopy() {
-  const hiragana = useContext(HiraganaContext);
-  return (text) => hiragana ? extendedHiraganaCopy[text] ?? hiraganaCopy[text] ?? text : text;
+  const japanese = useContext(JapaneseContext);
+  return (text) => japanese ? getJapaneseCopy(text) : text;
 }
 
 const gallery = [
@@ -902,7 +1480,6 @@ function Home({ onPlay, musicActive }) {
 
       <main>
         <section className="intro-section">
-          <div className="section-label">{t("01 / THE CITY")}</div>
 
           <div className="intro-copy">
             <p className="giant-copy">
@@ -921,7 +1498,6 @@ function Home({ onPlay, musicActive }) {
 
         <section className="places-section" id="places">
           <div className="section-heading">
-            <span className="section-label">{t("02 / DESTINATIONS")}</span>
             <span className="section-index">{t(`${String(places.length).padStart(2, "0")} PLACES`)}</span>
           </div>
           <div className="destinations-toolbar">
@@ -938,7 +1514,6 @@ function Home({ onPlay, musicActive }) {
 
         <section className="map-section" id="find-your-way">
           <div className="map-copy">
-            <span className="section-label">{t("03 / GETTING AROUND")}</span>
 
             <h2>
               {t("FIND YOUR")}
@@ -982,6 +1557,7 @@ function Home({ onPlay, musicActive }) {
 const transportLines = [
   {
     id: "yamanote",
+    code: "JY",
     operator: "JR EAST",
     name: "Yamanote Line",
     color: "#73a94b",
@@ -991,6 +1567,7 @@ const transportLines = [
   },
   {
     id: "ginza",
+    code: "G",
     operator: "TOKYO METRO",
     name: "Ginza Line",
     color: "#f0a400",
@@ -1000,6 +1577,7 @@ const transportLines = [
   },
   {
     id: "asakusa",
+    code: "A",
     operator: "TOEI SUBWAY",
     name: "Asakusa Line",
     color: "#e94b45",
@@ -1009,6 +1587,7 @@ const transportLines = [
   },
   {
     id: "hibiya",
+    code: "H",
     operator: "TOKYO METRO",
     name: "Hibiya Line",
     color: "#b5b5b5",
@@ -1018,6 +1597,7 @@ const transportLines = [
   },
   {
     id: "marunouchi",
+    code: "M",
     operator: "TOKYO METRO",
     name: "Marunouchi Line",
     color: "#d93a3a",
@@ -1027,6 +1607,7 @@ const transportLines = [
   },
   {
     id: "hanzomon",
+    code: "Z",
     operator: "TOKYO METRO",
     name: "Hanzomon Line",
     color: "#8c6bb1",
@@ -1036,6 +1617,7 @@ const transportLines = [
   },
   {
     id: "fukutoshin",
+    code: "F",
     operator: "TOKYO METRO",
     name: "Fukutoshin Line",
     color: "#9a6b2f",
@@ -1045,6 +1627,7 @@ const transportLines = [
   },
   {
     id: "oedo",
+    code: "E",
     operator: "TOEI SUBWAY",
     name: "Oedo Line",
     color: "#9b2d8b",
@@ -1060,6 +1643,216 @@ const stationPoints = [
   ["Tokyo",35.6812,139.7671], ["Ginza",35.6717,139.7650], ["Asakusa",35.7116,139.7967],
   ["Oshiage / Skytree",35.7101,139.8107], ["Meiji-jingumae",35.6695,139.7053], ["Daikanyama",35.6481,139.7036],
   ["Nihombashi",35.6813,139.7739], ["Roppongi",35.6628,139.7314],
+  ["Shinagawa",35.6285,139.7387], ["Shimbashi",35.6663,139.7584],
+  ["Odaiba",35.6298,139.7759], ["Maihama",35.6361,139.8805],
+];
+
+const stationDetails = {
+  Shibuya: {
+    codes: ["JR Yamanote JY20", "JR Saikyo JA10", "Ginza G01", "Hanzomon Z01", "Fukutoshin F16", "Tokyu Toyoko TY01", "Tokyu Den-en-toshi DT01", "Keio Inokashira IN01"],
+    attractions: "Shibuya Scramble Crossing, Shibuya Sky, Hachiko Memorial Statue",
+    usefulArea: "Use the Hachiko Exit for the Scramble Crossing.",
+  },
+  Shinjuku: {
+    codes: ["JR Yamanote JY17", "JR Chuo Rapid JC05", "JR Chuo-Sobu JB10", "JR Saikyo JA11", "Marunouchi M08", "Toei Shinjuku S01", "Toei Oedo E27"],
+    attractions: "Shinjuku Gyoen, Kabukicho, Tokyo Metropolitan Government Building",
+    usefulArea: "Shinjuku Station is very large; follow the operator and exit signs for your destination.",
+  },
+  Harajuku: {
+    codes: ["JR Yamanote JY19", "Fukutoshin F15 (Meiji-jingumae)"],
+    attractions: "Meiji Jingu, Takeshita Street, Omotesando",
+    usefulArea: "Meiji-jingumae is a separate nearby station served by Tokyo Metro.",
+  },
+  Tokyo: {
+    codes: ["JR Yamanote JY01", "JR Chuo Rapid JC01", "JR Tokaido JT01", "JR Ueno-Tokyo JU01", "Marunouchi M17"],
+    attractions: "Tokyo Station Marunouchi Building, Imperial Palace East Gardens",
+    usefulArea: "Use the Marunouchi side for the historic station building and the Yaesu side for many Shinkansen gates.",
+  },
+  Ueno: {
+    codes: ["JR Yamanote JY05", "JR Keihin-Tohoku JK30", "JR Joban Rapid JJ01", "Ginza G16", "Hibiya H17"],
+    attractions: "Ueno Park, Tokyo National Museum, Ameyoko",
+    usefulArea: "Ueno Park and museums are on the Park side of the JR station.",
+  },
+  Ikebukuro: {
+    codes: ["JR Yamanote JY13", "JR Saikyo JA12", "Marunouchi M25", "Fukutoshin F09", "Seibu Ikebukuro SI01", "Tobu Tojo TJ01"],
+    attractions: "Sunshine City, Ikebukuro shopping district",
+    usefulArea: "The station has several operators; check the operator name before entering a gate.",
+  },
+  Shinagawa: {
+    codes: ["JR Yamanote JY25", "JR Keihin-Tohoku JK20", "JR Tokaido JT03", "JR Yokosuka JO17", "Keikyu KK01"],
+    attractions: "Shinagawa Station area, Takanawa Gateway",
+    usefulArea: "Keikyu platforms connect the station area with Haneda Airport services.",
+  },
+  Akihabara: {
+    codes: ["JR Yamanote JY03", "JR Keihin-Tohoku JK28", "JR Chuo-Sobu JB19", "Hibiya H16"],
+    attractions: "Akihabara Electric Town, Kanda Myojin",
+    usefulArea: "Use the Electric Town Exit for the main electronics and anime shopping streets.",
+  },
+  Ginza: {
+    codes: ["Ginza G09", "Marunouchi M16", "Hibiya H09", "Asakusa A11 (Higashi-ginza)"],
+    attractions: "Ginza shopping district, Kabukiza Theatre",
+    usefulArea: "Ginza and Higashi-ginza are connected by underground passages but are separate stations.",
+  },
+  Asakusa: {
+    codes: ["Ginza G19", "Toei Asakusa A18", "Tobu Skytree TS01"],
+    attractions: "Senso-ji, Kaminarimon, Nakamise Street",
+    usefulArea: "Follow signs for Kaminarimon and Senso-ji; several operators have separate gates.",
+  },
+  Roppongi: {
+    codes: ["Hibiya H04", "Toei Oedo E23"],
+    attractions: "Roppongi Hills, Mori Art Museum, Tokyo Midtown",
+    usefulArea: "Roppongi Hills and Tokyo Midtown are in different directions from the station.",
+  },
+  Shimbashi: {
+    codes: ["JR Yamanote JY29", "JR Keihin-Tohoku JK24", "Ginza G08", "Toei Asakusa A10", "Yurikamome U01"],
+    attractions: "Shiodome, Hamarikyu Gardens, gateway to Odaiba",
+    usefulArea: "Yurikamome has its own station and gate area; follow the dedicated signs.",
+  },
+  Odaiba: {
+    codes: ["Yurikamome Daiba U07", "Rinkai Tokyo Teleport R04 (nearby)"],
+    attractions: "Odaiba Seaside Park, waterfront museums and shopping",
+    usefulArea: "Odaiba has several stations; choose the one closest to your destination.",
+  },
+  Maihama: {
+    codes: ["JR Keiyo JE07"],
+    attractions: "Tokyo Disney Resort",
+    usefulArea: "Follow the resort signs from the south side of the station.",
+  },
+  "Oshiage / Skytree": {
+    codes: ["Hanzomon Z14", "Toei Asakusa A20", "Tobu Skytree TS30"],
+    attractions: "Tokyo Skytree, Tokyo Solamachi",
+    usefulArea: "Oshiage is the station name for Tokyo Skytree; follow the Skytree exit signs.",
+  },
+};
+
+const railwayDirectory = [
+  {
+    operator: "JR EAST",
+    type: "JR / urban and regional rail",
+    lines: [
+      { name: "Yamanote Line", code: "JY", color: "#80c241", corridor: "Tokyo's circular line; Shinjuku, Shibuya, Harajuku, Tokyo, Ueno and Ikebukuro.", mapId: "yamanote" },
+      { name: "Chuo Rapid Line", code: "JC", color: "#f15a22", corridor: "Tokyo–Shinjuku–Tachikawa–Hachioji; faster service with fewer stops than the local service." },
+      { name: "Chuo-Sobu Local Line", code: "JB", color: "#ffd400", corridor: "Local service through Shinjuku, Akihabara and onward toward Chiba; stops more frequently than the Chuo Rapid." },
+      { name: "Keihin-Tohoku Line", code: "JK", color: "#00b2e5", corridor: "Omiya–Ueno–Tokyo–Shinagawa–Yokohama corridor." },
+      { name: "Saikyo Line", code: "JA", color: "#00ac9a", corridor: "Omiya–Ikebukuro–Shinjuku–Shibuya–Osaki corridor." },
+      { name: "Shonan-Shinjuku Line", code: "JS", color: "#e73848", corridor: "Through service linking the Shinjuku area with destinations in the north and south." },
+      { name: "Yokosuka Line", code: "JO", color: "#007ac0", corridor: "Tokyo–Shinagawa and through service toward Yokosuka." },
+      { name: "Sobu Rapid Line", code: "JO", color: "#007ac0", corridor: "Tokyo–Chiba rapid service; shares the JO station-code family with Yokosuka services." },
+      { name: "Tokaido Line", code: "JT", color: "#f68b1e", corridor: "Tokyo–Shinagawa and onward toward Yokohama and the Tokaido corridor." },
+      { name: "Keiyo Line", code: "JE", color: "#c9252f", corridor: "Tokyo–Maihama (Tokyo Disney Resort)–Soga." },
+      { name: "Musashino Line", code: "JM", color: "#e85298", corridor: "Suburban orbital service connecting western and eastern Tokyo-area railways." },
+      { name: "Ueno-Tokyo Line", code: "JU", color: "#f68b1e", corridor: "Through service connecting Ueno with Tokyo Station and southern lines." },
+      { name: "Joban Rapid Line", code: "JJ", color: "#00b261", corridor: "Ueno–Matsudo–Abiko–Toride corridor." },
+      { name: "Joban Local Line", code: "JL", color: "#80c89b", corridor: "Local service through the northern Tokyo suburbs, including Matsudo and Abiko." },
+      { name: "Yokohama Line", code: "JH", color: "#7bb8d2", corridor: "Higashi-Kanagawa–Shin-Yokohama–Hachioji." },
+      { name: "Nambu Line", code: "JN", color: "#ffd400", corridor: "Kawasaki–Musashi-Kosugi–Tachikawa." },
+    ],
+  },
+  {
+    operator: "TOKYO METRO",
+    type: "Subway / nine lines",
+    lines: [
+      { name: "Ginza Line", code: "G", color: "#f39700", corridor: "Shibuya–Ginza–Ueno–Asakusa.", mapId: "ginza" },
+      { name: "Marunouchi Line", code: "M", color: "#e60012", corridor: "Ikebukuro–Tokyo–Shinjuku.", mapId: "marunouchi" },
+      { name: "Hibiya Line", code: "H", color: "#9caeb7", corridor: "Naka-meguro–Roppongi–Ginza–Ueno.", mapId: "hibiya" },
+      { name: "Tozai Line", code: "T", color: "#00a7db", corridor: "Nakano–Otemachi–Nishi-funabashi." },
+      { name: "Chiyoda Line", code: "C", color: "#00bb85", corridor: "Yoyogi-uehara–Omotesando–Otemachi–Kita-ayase." },
+      { name: "Yurakucho Line", code: "Y", color: "#c1a470", corridor: "Wakoshi–Ikebukuro–Yurakucho–Shin-kiba." },
+      { name: "Hanzomon Line", code: "Z", color: "#8f76d6", corridor: "Shibuya–Otemachi–Oshiage.", mapId: "hanzomon" },
+      { name: "Namboku Line", code: "N", color: "#00ada9", corridor: "Meguro–Nagatacho–Akabane-iwabuchi." },
+      { name: "Fukutoshin Line", code: "F", color: "#9c5e31", corridor: "Shibuya–Shinjuku-sanchome–Ikebukuro.", mapId: "fukutoshin" },
+    ],
+  },
+  {
+    operator: "TOEI SUBWAY",
+    type: "Subway / four lines",
+    lines: [
+      { name: "Asakusa Line", code: "A", color: "#e85298", corridor: "Nishi-magome–Shimbashi–Asakusa–Oshiage.", mapId: "asakusa" },
+      { name: "Mita Line", code: "I", color: "#0079c2", corridor: "Meguro–Hibiya–Otemachi–Nishi-takashimadaira." },
+      { name: "Shinjuku Line", code: "S", color: "#6cbb5a", corridor: "Shinjuku–Jimbocho–Motoyawata." },
+      { name: "Oedo Line", code: "E", color: "#b6007a", corridor: "Looping route serving Shinjuku, Roppongi, Tsukiji and Ueno-okachimachi.", mapId: "oedo" },
+    ],
+  },
+  {
+    operator: "PRIVATE RAILWAYS & SPECIAL TRANSIT",
+    type: "Regular rail, airport links and special transit",
+    lines: [
+      { name: "Odakyu Odawara Line", corridor: "Shinjuku–Odawara; access toward Hakone and other western destinations." },
+      { name: "Keio Line", corridor: "Shinjuku–Keio-hachioji." },
+      { name: "Keio Inokashira Line", corridor: "Shibuya–Kichijoji." },
+      { name: "Seibu Shinjuku Line", corridor: "Seibu-shinjuku–Hon-kawagoe." },
+      { name: "Seibu Ikebukuro Line", corridor: "Ikebukuro–Chichibu / western suburban destinations." },
+      { name: "Tobu Skytree Line", corridor: "Asakusa / Oshiage–Tobu-dobutsu-koen and beyond." },
+      { name: "Tobu Tojo Line", corridor: "Ikebukuro–Kawagoe / Saitama destinations." },
+      { name: "Tokyu Toyoko Line", corridor: "Shibuya–Yokohama; through services connect with the Fukutoshin Line." },
+      { name: "Tokyu Den-en-toshi Line", corridor: "Shibuya–western suburbs; through services connect with the Hanzomon Line." },
+      { name: "Keikyu Line", corridor: "Shinagawa–Haneda Airport and Yokohama directions." },
+      { name: "Keisei Line", corridor: "Keisei-ueno / Nippori–Narita Airport and Chiba." },
+      { name: "Tsukuba Express", corridor: "Akihabara–Tsukuba." },
+      { name: "Rinkai Line", corridor: "Shin-kiba–Tokyo Teleport / Odaiba–Osaki." },
+      { name: "Yurikamome Line", corridor: "Shimbashi–Odaiba–Toyosu; automated elevated transit." },
+      { name: "Tokyo Monorail", corridor: "Hamamatsucho–Haneda Airport; airport monorail." },
+      { name: "Nippori-Toneri Liner", corridor: "Nippori–Minumadai-shinsuikōen; automated transit." },
+      { name: "Tokyo Sakura Tram (Toden Arakawa Line)", corridor: "Waseda–Minowabashi; street-running tram." },
+    ],
+  },
+];
+
+const airportServices = [
+  { airport: "NARITA AIRPORT", services: [
+    { name: "Narita Express (N'EX)", route: "JR service to major terminals including Tokyo, Shinagawa, Shibuya and Shinjuku; check the current train pattern and reservation requirements." },
+    { name: "Keisei Skyliner", route: "Limited Express service between Narita Airport and Keisei-Ueno / Nippori; reserved seating and separate ticket." },
+    { name: "Keisei Access Express", route: "Through services may continue onto the Toei Asakusa Line and other lines; destination varies by service." },
+  ] },
+  { airport: "HANEDA AIRPORT", services: [
+    { name: "Keikyu Airport Line", route: "Connects the airport with Shinagawa and offers through services; confirm the destination shown on the train." },
+    { name: "Tokyo Monorail", route: "Connects the airport with Hamamatsucho, where JR Yamanote and Keihin-Tohoku services are available." },
+  ] },
+];
+
+const visitorGuides = [
+  { title: "IC Cards", items: [
+    "Suica and PASMO are rechargeable IC cards used on most participating JR, subway and private railway services, plus many buses and shops.",
+    "Buy or charge a card at a station ticket machine or service counter where available. Mobile card options depend on your device and region.",
+    "Tap once at the entry gate and tap again at the exit gate. Use the same card throughout the trip and keep it ready at the gate.",
+  ] },
+  { title: "Understanding stations", items: [
+    "Station codes combine a line letter with a station number, such as JY20 or G01. Check the code and station name together.",
+    "Line colors help identify a route, but always confirm the operator, line name and destination on signs and platform displays.",
+    "Platform signs show destinations and train types. Check the direction and stopping pattern before boarding.",
+  ] },
+  { title: "Train types", items: [
+    "Local trains stop at every station on their route.",
+    "Rapid and express services skip some stations. Limited Express trains may require a separate limited-express ticket or seat reservation.",
+    "Always check the station's stopping pattern; not every train stops at every station.",
+  ] },
+  { title: "Transfers", items: [
+    "JR, Tokyo Metro, Toei and private railways are separate operators. Follow signs for the exact line and operator when transferring.",
+    "Look for transfer signs and line colors. Some transfers require exiting one fare area or walking between nearby station buildings.",
+    "When using an IC card, follow the transfer gates and signs so your fare is recorded correctly.",
+  ] },
+  { title: "Train etiquette", items: [
+    "Queue behind the marked lines, let passengers exit first, and keep doorways clear.",
+    "Keep conversations quiet, avoid phone calls, and keep luggage close without blocking seats or aisles.",
+    "Follow each station's escalator guidance; local customs vary by area and can change during busy periods.",
+  ] },
+  { title: "Last trains", items: [
+    "Tokyo trains do not run 24 hours. Check the last departure for your exact route before going out, especially late at night.",
+    "Service times, platforms and disruptions change. Use an official operator planner or Google Maps Transit for current journey planning.",
+  ] },
+];
+
+const touristRoutes = [
+  ["Shinjuku", "Shibuya", "JR Yamanote Line toward Shibuya / Shinagawa is a simple example; confirm the platform display."],
+  ["Shinjuku", "Harajuku", "JR Yamanote Line; check the platform direction and current service."],
+  ["Shinjuku", "Tokyo", "JR Chuo Rapid Line is a common direct option; confirm the departure board."],
+  ["Shinjuku", "Asakusa", "Several transfers are possible; use a live planner for the best current route."],
+  ["Shinjuku", "Akihabara", "JR Chuo-Sobu Local Line is one direct option; check the platform and direction."],
+  ["Shibuya", "Tokyo Tower", "Use a live planner for the nearest station and walking approach to your chosen tower entrance."],
+  ["Shinjuku", "Ueno", "JR Yamanote Line is a common direct option; confirm the direction on the platform."],
+  ["Tokyo", "Maihama", "JR Keiyo Line serves Maihama for Tokyo Disney Resort; allow time to walk to the Keiyo platforms."],
+  ["Shinjuku", "Narita Airport", "Compare Narita Express and other current airport services using a live planner."],
+  ["Shinjuku", "Haneda Airport", "Compare current JR / Keikyu or monorail connections using a live planner."],
 ];
 
 const transportTips = [
@@ -1082,10 +1875,11 @@ const shoppingGuide = [
   { area: "GINZA", focus: "FLAGSHIPS / DEPARTMENT STORES / LUXURY", text: "Best for major department stores, flagships and higher-end Japanese and international brands.", image: "https://upload.wikimedia.org/wikipedia/commons/5/5b/Ginza-WAKO_at_night.jpg?utm_source=en.wikipedia.org&utm_campaign=index&utm_content=original", stores: [{ name: "GINZA SIX", note: "Luxury fashion, lifestyle shops and dining in central Ginza." }, { name: "Ginza Mitsukoshi", note: "Department store with fashion, homeware and food floors." }, { name: "UNIQLO Ginza", note: "Flagship store with a wide range of Japanese casualwear." }] },
 ];
 
-function TrainMap({ activeLine }) {
-  const t = useCopy();
+function TrainMap({ activeLine, activeOperator, selectedStation, onSelectStation, onSelectLine, resetKey }) {
   const mapRef = useRef(null);
   const mapInstance = useRef(null);
+  const callbacks = useRef({});
+  callbacks.current = { onSelectStation, onSelectLine };
 
   useEffect(() => {
     if (!mapRef.current || mapInstance.current) return;
@@ -1096,11 +1890,14 @@ function TrainMap({ activeLine }) {
       attribution: '&copy; OpenStreetMap contributors',
     }).addTo(map);
     stationPoints.forEach(([name, lat, lng]) => {
-      L.circleMarker([lat,lng], { radius: 5, color: "#111", weight: 2, fillColor: "#f0eee8", fillOpacity: 1 })
-        .bindTooltip(t(name), { direction: "top", offset: [0,-6] })
+      const code = stationDetails[name]?.codes?.[0];
+      L.circleMarker([lat,lng], { radius: 6, color: "#101018", weight: 2, fillColor: "#fff", fillOpacity: 1 })
+        .bindTooltip(code ? `${name} · ${code}` : name, { direction: "top", offset: [0,-6] })
+        .on("click", () => callbacks.current.onSelectStation(name))
         .addTo(map);
     });
     mapInstance.current = map;
+    window.setTimeout(() => map.invalidateSize(), 0);
     return () => { map.remove(); mapInstance.current = null; };
   }, []);
 
@@ -1109,22 +1906,36 @@ function TrainMap({ activeLine }) {
     if (!map) return;
     const layers = [];
     transportLines.forEach((line) => {
+      if (activeOperator !== "ALL" && activeOperator !== line.operator) return;
       if (activeLine !== "ALL" && activeLine !== line.id) return;
       const layer = L.polyline(line.coords, {
         color: line.color,
-        weight: activeLine === line.id ? 7 : activeLine === "ALL" ? 4 : 2,
-        opacity: activeLine === line.id ? 0.95 : activeLine === "ALL" ? 0.62 : 0.18,
+        weight: activeLine === line.id ? 7 : 4,
+        opacity: activeLine === line.id ? 0.98 : 0.76,
         lineJoin: "round",
       }).addTo(map);
+      layer.on("click", () => callbacks.current.onSelectLine(line.id));
       layers.push(layer);
     });
     return () => layers.forEach((layer) => map.removeLayer(layer));
-  }, [activeLine]);
+  }, [activeLine, activeOperator]);
+
+  useEffect(() => {
+    const map = mapInstance.current;
+    if (!map) return;
+    const point = stationPoints.find(([name]) => name === selectedStation);
+    if (point) map.panTo([point[1], point[2]]);
+  }, [selectedStation]);
+
+  useEffect(() => {
+    const map = mapInstance.current;
+    if (map && resetKey > 0) map.setView([35.683,139.748], 12.2);
+  }, [resetKey]);
 
   return <div className="transport-map" ref={mapRef} />;
 }
 
-const routePlaces = ["Shibuya", "Asakusa", "Meiji Jingu", "Daikanyama", "Tokyo Skytree"];
+const routePlaces = ["Shinjuku", "Shibuya", "Harajuku", "Tokyo", "Ueno", "Ikebukuro", "Shinagawa", "Akihabara", "Ginza", "Asakusa", "Roppongi", "Shimbashi", "Odaiba", "Maihama", "Tokyo Tower", "Narita Airport", "Haneda Airport"];
 
 const routeMatrix = {
   "Shibuya|Asakusa": { fare: "¥252", time: "33 min", route: "Tokyo Metro Ginza Line · direct", note: "Current adult IC fare published by Tokyo Metro for Shibuya → Asakusa. Paper ticket is ¥260.", operator: "TOKYO METRO" },
@@ -1184,7 +1995,6 @@ function PlacesToGoSection() {
   return (
     <section className="places-to-go-section" id="places-to-go">
       <div className="places-to-go-section__heading">
-        <span className="section-label">{t("07 / PLACES TO GO")}</span>
         <h2>{t("PLACES TO GO")}<br /><span>{t("IN TOKYO.")}</span></h2>
         <p>{t("Six city stops, from the bright crossing to a quiet shrine forest.")}</p>
       </div>
@@ -1225,7 +2035,6 @@ function ShoppingGuideSection() {
   return (
     <section className="shopping-section things-shopping" id="shopping">
       <div className="shopping-carousel-heading">
-        <div className="section-label">{t("08 / SHOPPING")}</div>
         <h2>{t("BUY WHAT")}<br /><span>{t("YOU CAME FOR.")}</span></h2>
         <p className="shopping-lead">{t("Tokyo's shopping districts have different personalities. Harajuku is strong for street fashion and sneakers, Shibuya for fashion and lifestyle, Daikanyama for quieter Japanese design, Asakusa for traditional goods and kitchenware, Akihabara for electronics, and Ginza for flagships and department stores.")}</p>
       </div>
@@ -1236,7 +2045,7 @@ function ShoppingGuideSection() {
               <OptimizedImage className="progressive-carousel__image" src={item.image} alt={`${t(item.area)} shopping district`} loading={index === 0 ? "eager" : "lazy"} priority={index === 0} sizes="(max-width: 850px) 100vw, 80vw" />
               <div className="progressive-carousel__shade" aria-hidden="true" />
               <div className="progressive-carousel__slide-copy">
-                <span>0{index + 1} / 0{shoppingGuide.length} · {t(item.area)}</span>
+                <span>{t(item.area)}</span>
                 <h3>{t(item.focus)}</h3>
                 <p>{t(item.text)}</p>
               </div>
@@ -1244,9 +2053,8 @@ function ShoppingGuideSection() {
           ))}
         </SliderContent>
         <SliderBtnGroup>
-          {shoppingGuide.map((item, index) => (
+          {shoppingGuide.map((item) => (
             <SliderBtn key={item.area} value={item.area} onSelect={setSelectedArea}>
-              <span className="progressive-carousel__button-index">0{index + 1} / 0{shoppingGuide.length}</span>
               <strong>{t(item.area)}</strong>
               <p>{t(item.focus)}</p>
             </SliderBtn>
@@ -1284,22 +2092,7 @@ function ShoppingGuideSection() {
 }
 
 function Train() {
-  const t = useCopy();
-
-  return (
-    <>
-      <section className="transport-hero transport-hero-photo train-hero">
-        <OptimizedImage className="transport-hero-image" src="https://images.pexels.com/photos/31385056/pexels-photo-31385056.jpeg?cs=srgb&fm=jpg" alt="Japanese train station in Tokyo" priority sizes="100vw" referrerPolicy="no-referrer" />
-        <div className="transport-hero-overlay" />
-        <div className="transport-hero-copy">
-          <span className="section-label">{t("TOKYO / TRANSPORT")}</span>
-          <h1>{t("GET AROUND")}<br /><span>{t("TOKYO.")}</span></h1>
-          <p>{t("Train lines, fares, passes and the simplest way to move around Tokyo.")}</p>
-        </div>
-      </section>
-      <Footer />
-    </>
-  );
+  return <TrainGuide />;
 }
 
 function TrainDetails() {
@@ -1324,13 +2117,11 @@ function TrainDetails() {
 
       <main className="transport-page train-clean-page">
         <section className="transport-intro train-clean-intro">
-          <div className="section-label">{t("01 / THE NETWORK")}</div>
           <div><h2>{t("KNOW")}<br /><span>{t("THE LINES.")}</span></h2><p>{t("JR East, Tokyo Metro, Toei Subway and private railways operate separate networks. The map below is a tourist-focused visual guide, not a live timetable.")}</p></div>
         </section>
 
         <section className="transport-map-section train-clean-map">
           <div className="transport-map-copy">
-            <div className="section-label">{t("02 / RAIL MAP")}</div>
             <h2>{t("FOLLOW")}<br /><span>{t("THE LINES.")}</span></h2>
             <div className="line-picker">
               <button type="button" className={activeLine === "ALL" ? "active" : ""} onClick={() => setActiveLine("ALL")}>{t("ALL LINES")}</button>
@@ -1342,7 +2133,6 @@ function TrainDetails() {
         </section>
 
         <section className="fare-section train-clean-section">
-          <div className="section-label">{t("03 / FARES")}</div>
           <h2>{t("KNOW THE")}<br /><span>{t("PRICE.")}</span></h2>
           <AnimatedTabs
             ariaLabel={t("Tokyo fare options")}
@@ -1373,7 +2163,6 @@ function TrainDetails() {
         </section>
 
         <section className="route-planner train-clean-section">
-          <div className="section-label">{t("04 / FARE CALCULATOR")}</div>
           <h2>{t("FROM HERE.")}<br /><span>{t("TO THERE.")}</span></h2>
           <div className="route-controls">
             <label>{t("FROM")}<select value={from} onChange={(e) => setFrom(e.target.value)}>{routePlaces.map((place) => <option key={place} value={place}>{t(place)}</option>)}</select></label>
@@ -1390,7 +2179,6 @@ function TrainDetails() {
         </section>
 
         <section className="train-payment-cards train-clean-section">
-          <div className="section-label">{t("05 / PAYMENT")}</div>
           <h2>{t("TAP.")}<br /><span>{t("GO.")}</span></h2>
           <div className="train-simple-cards">
             <article><strong>{t("SUICA / PASMO")}</strong><p>{t("Tap in and out on participating trains and buses. Rechargeable and widely useful.")}</p></article>
@@ -1405,39 +2193,313 @@ function TrainDetails() {
   );
 }
 
+function TrainGuide() {
+  const t = useCopy();
+  const [activeLine, setActiveLine] = useState("ALL");
+  const [activeOperator, setActiveOperator] = useState("ALL");
+  const [selectedStation, setSelectedStation] = useState("Shinjuku");
+  const [from, setFrom] = useState("Shinjuku");
+  const [to, setTo] = useState("Shibuya");
+  const [routeSubmitted, setRouteSubmitted] = useState(false);
+  const [query, setQuery] = useState("");
+  const [directorySearch, setDirectorySearch] = useState("");
+  const [directoryNotice, setDirectoryNotice] = useState("");
+  const [openOperator, setOpenOperator] = useState("");
+  const [mapResetKey, setMapResetKey] = useState(0);
+  const selectedLine = transportLines.find((line) => line.id === activeLine);
+  const routeInfo = touristRoutes.find(([origin, destination]) => origin === from && destination === to);
+  const routeMapUrl = `https://www.google.com/maps/dir/?api=1&origin=${encodeURIComponent(`${from} Station, Tokyo`)}&destination=${encodeURIComponent(`${to} Station, Tokyo`)}&travelmode=transit`;
+  const searchResults = [
+    ...stationPoints
+      .map(([name]) => ({ type: "station", name }))
+      .filter((result) => query && result.name.toLowerCase().includes(query.toLowerCase())),
+    ...railwayDirectory
+      .flatMap((group) => group.lines.map((line) => ({ type: "line", name: line.name, operator: group.operator, mapId: line.mapId })))
+      .filter((result) => query && result.name.toLowerCase().includes(query.toLowerCase())),
+  ].slice(0, 8);
+  const selectedStationDetails = stationDetails[selectedStation];
+  const selectedStationLines = transportLines.filter((line) => line.stations.some((station) => station.toLowerCase() === selectedStation.toLowerCase()));
+  const directoryMatches = railwayDirectory
+    .map((group) => ({
+      ...group,
+      lines: group.lines.filter((line) => `${line.name} ${line.code ?? ""} ${line.corridor}`.toLowerCase().includes(directorySearch.toLowerCase())),
+    }))
+    .filter((group) => group.lines.length > 0);
+  const scrollTo = (id) => document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
+
+  const selectSearchResult = (result) => {
+    if (result.type === "station") {
+      setSelectedStation(result.name);
+    } else {
+      const line = transportLines.find((item) => item.id === result.mapId);
+      setDirectoryNotice({ lineName: result.name, isMapped: Boolean(result.mapId) });
+      setActiveOperator(line?.operator ?? "ALL");
+      setActiveLine(result.mapId ?? "ALL");
+    }
+    setQuery("");
+    scrollTo("train-map");
+  };
+
+  const chooseDirectoryLine = (line, operator) => {
+    if (!line.mapId) {
+      setDirectoryNotice({ lineName: line.name, isMapped: false });
+      return;
+    }
+    setActiveOperator(operator);
+    setActiveLine(line.mapId);
+    setDirectoryNotice({ lineName: line.name, isMapped: true });
+    scrollTo("train-map");
+  };
+
+  const chooseShortcut = (origin, destination) => {
+    setFrom(origin);
+    setTo(destination);
+    setRouteSubmitted(true);
+    scrollTo("route-finder");
+  };
+
+  return (
+    <>
+      <section className="transport-hero transport-hero-photo train-hero">
+        <OptimizedImage className="transport-hero-image" src="https://images.pexels.com/photos/31385056/pexels-photo-31385056.jpeg?cs=srgb&fm=jpg" alt={t("Tokyo railway station")} priority sizes="100vw" referrerPolicy="no-referrer" />
+        <div className="transport-hero-overlay" />
+        <div className="transport-hero-copy">
+          <span className="section-label">{t("TOKYO / RAILWAY GUIDE")}</span>
+          <h1>{t("TOKYO RAILWAY GUIDE")}</h1>
+          <p>{t("Navigate Tokyo like a local. Understand the train lines, discover stations, and find your way around Japan's extensive railway network.")}</p>
+          <div className="train-hero-search">
+            <label htmlFor="train-quick-search">{t("Search a station or train line...")}</label>
+            <input id="train-quick-search" type="search" value={query} onChange={(event) => setQuery(event.target.value)} placeholder={t("Search a station or train line...")} autoComplete="off" />
+            {!!query && <div className="train-search-results" role="listbox" aria-label={t("Stations and lines")}>
+              {searchResults.map((result) => (
+                <button type="button" role="option" key={`${result.type}-${result.name}`} onClick={() => selectSearchResult(result)}>
+                  <span>{t(result.name)}</span><small>{result.type === "station" ? t("Station") : t(result.operator)}</small>
+                </button>
+              ))}
+              {!searchResults.length && <p>{t("No matching stations or lines.")}</p>}
+            </div>}
+          </div>
+          <nav className="train-quick-links" aria-label={t("Railway operators and airport access")}>
+            {[
+              ["JR Lines", "JR EAST", "rail-directory"],
+              ["Tokyo Metro", "TOKYO METRO", "rail-directory"],
+              ["Toei Subway", "TOEI SUBWAY", "rail-directory"],
+              ["Private Railways", "PRIVATE RAILWAYS & SPECIAL TRANSIT", "rail-directory"],
+              ["Airport Access", "AIRPORT ACCESS", "airport-access"],
+            ].map(([label, operator, target]) => (
+              <a key={label} href={`#${target}`} onClick={() => {
+                setDirectorySearch("");
+                if (target === "rail-directory") setOpenOperator(operator);
+              }}>{t(label)}</a>
+            ))}
+          </nav>
+          <p className="train-beginner-prompt">{t("First time riding Tokyo trains?")} <a href="#before-you-board">{t("Start here.")}</a></p>
+        </div>
+      </section>
+
+      <main className="train-guide-page">
+        <section className="train-guide-section train-map-section" id="train-map">
+          <div className="train-section-heading">
+            <span className="section-label">{t("INTERACTIVE NETWORK")}</span>
+            <h2>{t("Explore the railway map")}</h2>
+            <p>{t("Zoom and drag the map. Select a station for visitor information or a highlighted line for its mapped stops.")}</p>
+          </div>
+          <p className="train-map-coverage"><strong>{t("Map coverage")}</strong> {t("This guide highlights eight selected corridors and visitor station areas: Yamanote, Ginza, Asakusa, Hibiya, Marunouchi, Hanzomon, Fukutoshin and Oedo. Colored links are simplified between mapped hubs, not complete track geometry. The map is not a full network, timetable, or live service feed.")}</p>
+          <div className="train-map-filters" role="group" aria-label={t("Filter map by operator")}>
+            {["ALL", "JR EAST", "TOKYO METRO", "TOEI SUBWAY"].map((operator) => (
+              <button type="button" key={operator} className={activeOperator === operator ? "is-active" : ""} onClick={() => { setActiveOperator(operator); setActiveLine("ALL"); setDirectoryNotice(""); }}>
+                {t(operator === "ALL" ? "All mapped lines" : operator)}
+              </button>
+            ))}
+          </div>
+          <div className="train-line-picker" aria-label={t("Filter by train line")}>
+            {transportLines.filter((line) => activeOperator === "ALL" || line.operator === activeOperator).map((line) => (
+              <button type="button" key={line.id} className={activeLine === line.id ? "is-active" : ""} onClick={() => { setActiveLine(activeLine === line.id ? "ALL" : line.id); setDirectoryNotice(""); }}>
+                <i style={{ backgroundColor: line.color }} />{t(line.name)} <small>{line.code}</small>
+              </button>
+            ))}
+          </div>
+          <div className="train-map-layout">
+            <div className="train-map-frame">
+              <TrainMap
+                activeLine={activeLine}
+                activeOperator={activeOperator}
+                selectedStation={selectedStation}
+                onSelectStation={setSelectedStation}
+                onSelectLine={(lineId) => {
+                  const line = transportLines.find((item) => item.id === lineId);
+                  setActiveLine(lineId);
+                  setActiveOperator(line?.operator ?? "ALL");
+                  setDirectoryNotice("");
+                }}
+                resetKey={mapResetKey}
+              />
+              <button className="train-map-reset" type="button" onClick={() => { setMapResetKey((key) => key + 1); setActiveLine("ALL"); setActiveOperator("ALL"); }}>{t("Reset map")}</button>
+            </div>
+            <aside className="train-station-panel" aria-live="polite">
+              <span className="section-label">{t("STATION INFORMATION")}</span>
+              <h3>{t(selectedStation)} {t("Station")}</h3>
+              <p>{t("Station codes and line names shown are reference information; confirm signs at the station.")}</p>
+              <h4>{t("Lines & station codes")}</h4>
+              <ul>{(selectedStationDetails?.codes ?? selectedStationLines.map((line) => `${line.name} (${line.code})`)).map((code) => <li key={code}>{t(code)}</li>)}</ul>
+              {selectedStationDetails?.attractions && <><h4>{t("Nearby")}</h4><p>{t(selectedStationDetails.attractions)}</p></>}
+              {selectedStationDetails?.usefulArea && <><h4>{t("Visitor tip")}</h4><p>{t(selectedStationDetails.usefulArea)}</p></>}
+              <a href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${selectedStation} Station, Tokyo`)}`} target="_blank" rel="noreferrer">{t("Open station in Google Maps ↗")}</a>
+              {selectedLine && <div className="train-selected-line">
+                <h4><i style={{ backgroundColor: selectedLine.color }} />{t(selectedLine.name)} ({selectedLine.code})</h4>
+                <p>{t("Mapped key stops")}: {selectedLine.stations.map((station) => t(station)).join(" · ")}</p>
+                <small>{t("Selected stations only; intermediate stops are not shown.")}</small>
+              </div>}
+              {directoryNotice && <p className="train-map-notice">{t(directoryNotice.lineName)}: {t(directoryNotice.isMapped ? "the map shows selected station-to-station corridors, not full track geometry." : "This line is listed in the directory, but is not included in the map overlay.")}</p>}
+            </aside>
+          </div>
+          <p className="train-map-legend"><strong>{t("Legend")}</strong> {t("JR East")}, {t("Tokyo Metro")}, {t("Toei Subway")}: {t("line colors follow common operator line-color references where available. White circles mark selected station areas. Pan and zoom using the map controls.")}</p>
+          <span className="train-map-attribution">{t("Map tiles © OpenStreetMap contributors. Station pins indicate approximate station areas.")}</span>
+        </section>
+
+        <section className="train-guide-section" id="rail-directory">
+          <div className="train-section-heading">
+            <span className="section-label">{t("LINE DIRECTORY")}</span>
+            <h2>{t("Find your line")}</h2>
+            <p>{t("Browse the major Tokyo-area operators. Station lists below are key tourist stops and corridors, not every stop on each service.")}</p>
+          </div>
+          <label className="train-directory-search">
+            <span>{t("Search lines and destinations")}</span>
+            <input type="search" value={directorySearch} onChange={(event) => setDirectorySearch(event.target.value)} placeholder={t("Type a line, code, or destination")} />
+          </label>
+          <div className="train-directory">
+            {directoryMatches.map((group) => (
+              <details className="train-operator" key={group.operator} open={!!directorySearch || openOperator === group.operator}>
+                <summary><span>{t(group.operator)}</span><small>{t(group.type)} · {group.lines.length} {t("lines")}</small></summary>
+                <div className="train-directory-lines">
+                  {group.lines.map((line) => (
+                    <article className="train-directory-line" key={line.name}>
+                      <i className="train-directory-line__swatch" style={line.color ? { backgroundColor: line.color } : undefined} />
+                      <div>
+                        <h3>{t(line.name)} {line.code && <small>{line.code}</small>}</h3>
+                        <p>{t(line.corridor)}</p>
+                        {line.mapId
+                          ? <button type="button" onClick={() => chooseDirectoryLine(line, group.operator)}>{t("Highlight on map")}</button>
+                          : <small className="train-directory-coverage">{t("Directory reference only; detailed route geometry is not included on this map.")}</small>}
+                      </div>
+                    </article>
+                  ))}
+                </div>
+              </details>
+            ))}
+            {!directoryMatches.length && <p className="train-empty-state">{t("No matching railway lines.")}</p>}
+          </div>
+          <p className="train-operator-note">{t("Tokyo Metro and Toei Subway are separate operators with separate fares and station gates. Follow the operator and line signs when transferring.")}</p>
+        </section>
+
+        <section className="train-guide-section train-route-section" id="route-finder">
+          <div className="train-section-heading">
+            <span className="section-label">{t("ROUTE FINDER")}</span>
+            <h2>{t("Plan a journey")}</h2>
+            <p>{t("Choose two stations to open a live transit planner. This site does not provide live schedules, fares, platform assignments, or disruptions.")}</p>
+          </div>
+          <form className="train-route-form" onSubmit={(event) => { event.preventDefault(); setRouteSubmitted(true); }}>
+            <label>{t("FROM")}<select value={from} onChange={(event) => setFrom(event.target.value)}>{routePlaces.map((station) => <option key={station} value={station}>{t(station)}</option>)}</select></label>
+            <span aria-hidden="true">→</span>
+            <label>{t("TO")}<select value={to} onChange={(event) => setTo(event.target.value)}>{routePlaces.map((station) => <option key={station} value={station}>{t(station)}</option>)}</select></label>
+            <button type="submit">{t("FIND ROUTE")}</button>
+          </form>
+          {routeSubmitted && <div className="train-route-result" aria-live="polite">
+            <div>
+              <span className="section-label">{t("ILLUSTRATIVE ROUTE GUIDANCE")}</span>
+              <h3>{t(from)} → {t(to)}</h3>
+              {from === to
+                ? <p>{t("Choose two different stations to plan a trip.")}</p>
+                : routeInfo
+                  ? <><p>{t(routeInfo[2])}</p><p>{t("This is an illustrative suggestion, not a live route. Check station signs for the correct platform and current service.")}</p></>
+                  : <p>{t("No route details are stored for this station pair. Use the live planner below for current options.")}</p>}
+              <p className="train-route-disclaimer">{t("Travel times, fares, transfers and platform information are not estimated here.")}</p>
+            </div>
+            <a href={routeMapUrl} target="_blank" rel="noreferrer">{t("Open Google Maps Transit ↗")}</a>
+          </div>}
+        </section>
+
+        <section className="train-guide-section train-shortcuts-section">
+          <div className="train-section-heading">
+            <span className="section-label">{t("TOURIST SHORTCUTS")}</span>
+            <h2>{t("Popular journeys")}</h2>
+          </div>
+          <div className="train-shortcuts">
+            {touristRoutes.map(([origin, destination, hint]) => (
+              <button type="button" key={`${origin}-${destination}`} onClick={() => chooseShortcut(origin, destination)}>
+                <span>{t(origin)} <b>→</b> {t(destination)}</span>
+                <small>{t(hint)}</small>
+              </button>
+            ))}
+          </div>
+        </section>
+
+        <section className="train-guide-section" id="before-you-board">
+          <div className="train-section-heading">
+            <span className="section-label">{t("FIRST-TIME VISITORS")}</span>
+            <h2>{t("BEFORE YOU BOARD")}</h2>
+            <p>{t("Open a topic for simple, practical advice.")}</p>
+          </div>
+          <div className="train-learning-grid">
+            {visitorGuides.map((guide) => (
+              <details className="train-learning-card" key={guide.title}>
+                <summary>{t(guide.title)}</summary>
+                <ul>{guide.items.map((item) => <li key={item}>{t(item)}</li>)}</ul>
+              </details>
+            ))}
+          </div>
+        </section>
+
+        <section className="train-guide-section" id="airport-access">
+          <div className="train-section-heading">
+            <span className="section-label">{t("AIRPORT ACCESS")}</span>
+            <h2>{t("From the airport to Tokyo")}</h2>
+            <p>{t("Services, stopping patterns, prices and reservation rules can change. Confirm the current details with the operator before departure.")}</p>
+          </div>
+          <div className="train-airport-grid">
+            {airportServices.map((airport) => (
+              <article className="train-airport-card" key={airport.airport}>
+                <span className="section-label">{t(airport.airport)}</span>
+                {airport.services.map((service) => (
+                  <div key={service.name}>
+                    <h3>{t(service.name)}</h3>
+                    <p>{t(service.route)}</p>
+                    <small>{t("Check the operator's official website or airport station counter for tickets, boarding location, current fares and service.")}</small>
+                  </div>
+                ))}
+              </article>
+            ))}
+          </div>
+        </section>
+      </main>
+      <Footer />
+    </>
+  );
+}
+
 function ThingsToDo() {
   const t = useCopy();
   useLayoutEffect(() => {
     window.scrollTo({ top: 0, left: 0, behavior: "auto" });
   }, []);
 
-  const slides = [
-    {
-      image: "https://wallpaperaccess.com/full/259516.jpg",
-      title: t("THINGS TO DO"),
-      description: t("Find your own way through Tokyo."),
-      meta: "TOKYO / 07 EXPERIENCES",
-    },
-    ...activities.map((activity) => ({
-        image: activity.image,
-        title: t(activity.title),
-        description: t(activity.text),
-        meta: `${t(activity.location)} / ${t(activity.hours)}`,
-    })),
-  ];
   return (
     <>
-      <main className="activities-page activities-page--scroll">
-        <ScrollGallery
-          slides={slides}
-          prefixLabel={t("TOKYO / EXPERIENCES")}
-          scrollPerTransition={80}
-          initialDelay={40}
-          finalDelay={40}
-          imageScale={1}
-          className="things-to-do-scroll-gallery"
-        />
-
+      <main className="activities-page activities-page--simple">
+        <section className="things-simple-hero">
+          <OptimizedImage
+            src="https://wallpaperaccess.com/full/259516.jpg"
+            alt="Tokyo city view"
+            priority
+            sizes="100vw"
+          />
+          <div className="things-simple-hero__shade" />
+          <div className="things-simple-hero__copy">
+            <span className="section-label">{t("TOKYO / EXPERIENCES")}</span>
+            <h1>{t("THINGS TO DO")}</h1>
+            <p>{t("Find your own way through Tokyo.")}</p>
+          </div>
+        </section>
         <PlacesToGoSection />
         <ShoppingGuideSection />
         <FoodBentoSection />
@@ -1548,10 +2610,6 @@ function Gallery() {
 
 function DayTripsSection() {
   const t = useCopy();
-  const tripTrackRef = useRef(null);
-  const tripDragRef = useRef(null);
-  const suppressTripClickRef = useRef(false);
-  const activeTripIndexRef = useRef(0);
   const trips = [
     {
       number: "01",
@@ -1609,120 +2667,13 @@ function DayTripsSection() {
     },
   ];
   const [selectedTrip, setSelectedTrip] = useState(null);
-  const selectedTripRef = useRef(null);
-  const carouselTrips = [...trips, ...trips, ...trips];
-  const [activeTripIndex, setActiveTripIndex] = useState(trips.length);
   const closeTrip = () => setSelectedTrip(null);
-  selectedTripRef.current = selectedTrip;
-  activeTripIndexRef.current = activeTripIndex;
-  const getTripSetWidth = (track) => {
-    const firstCard = track.children[0];
-    const nextSetCard = track.children[trips.length];
-    return firstCard && nextSetCard ? nextSetCard.offsetLeft - firstCard.offsetLeft : 0;
-  };
-  const normalizeTripPosition = () => {
-    const track = tripTrackRef.current;
-    if (!track) return;
-    const setWidth = getTripSetWidth(track);
-    if (!setWidth) return;
-
-    const offset = ((track.scrollLeft - setWidth) % setWidth + setWidth) % setWidth;
-    track.scrollLeft = setWidth + offset;
-  };
-  const getCenteredTripIndex = (track) => {
-    const center = track.getBoundingClientRect().left + track.clientWidth / 2;
-    let closestIndex = 0;
-    let closestDistance = Infinity;
-
-    Array.from(track.children).forEach((card, index) => {
-      const bounds = card.getBoundingClientRect();
-      const distance = Math.abs(bounds.left + bounds.width / 2 - center);
-      if (distance < closestDistance) {
-        closestIndex = index;
-        closestDistance = distance;
-      }
-    });
-
-    return closestIndex;
-  };
-  const handleTripScroll = (event) => {
-    const track = event.currentTarget;
-    const closestIndex = getCenteredTripIndex(track);
-
-    if (closestIndex !== activeTripIndexRef.current) {
-      activeTripIndexRef.current = closestIndex;
-      setActiveTripIndex(closestIndex);
-    }
-  };
-  useEffect(() => {
-    const track = tripTrackRef.current;
-    if (!track) return undefined;
-
-    const setWidth = getTripSetWidth(track);
-    track.scrollLeft = setWidth;
-    let previousTime = 0;
-    let animationFrame = 0;
-    const advance = (time) => {
-      if (previousTime && !tripDragRef.current && !selectedTripRef.current) {
-        const elapsed = Math.min((time - previousTime) / 1000, 0.05);
-        const loopWidth = getTripSetWidth(track);
-        if (loopWidth) {
-          track.scrollLeft += elapsed * 72;
-          if (track.scrollLeft >= loopWidth * 2) track.scrollLeft -= loopWidth;
-        }
-      }
-      previousTime = time;
-      animationFrame = window.requestAnimationFrame(advance);
-    };
-
-    animationFrame = window.requestAnimationFrame(advance);
-    return () => window.cancelAnimationFrame(animationFrame);
-  }, [trips.length]);
-  const handleTripPointerDown = (event) => {
-    if (event.button !== 0) return;
-    const track = tripTrackRef.current;
-    const card = event.target.closest(".faq-day-trip-card");
-    if (!card || !track) return;
-
-    tripDragRef.current = {
-      pointerId: event.pointerId,
-      startX: event.clientX,
-      scrollLeft: track.scrollLeft,
-      moved: false,
-    };
-    card.setPointerCapture(event.pointerId);
-    track.classList.add("is-dragging");
-  };
-  const handleTripPointerMove = (event) => {
-    const drag = tripDragRef.current;
-    const track = tripTrackRef.current;
-    if (!drag || drag.pointerId !== event.pointerId || !track) return;
-
-    const deltaX = event.clientX - drag.startX;
-    if (Math.abs(deltaX) > 5) drag.moved = true;
-    if (drag.moved) {
-      event.preventDefault();
-      track.scrollLeft = drag.scrollLeft - deltaX;
-    }
-  };
-  const handleTripPointerUp = (event) => {
-    const drag = tripDragRef.current;
-    if (!drag || drag.pointerId !== event.pointerId) return;
-
-    tripDragRef.current = null;
-    tripTrackRef.current?.classList.remove("is-dragging");
-    normalizeTripPosition();
-    if (drag.moved) {
-      suppressTripClickRef.current = true;
-      window.setTimeout(() => { suppressTripClickRef.current = false; }, 0);
-    }
-  };
-  const handleTripClickCapture = (event) => {
-    if (!suppressTripClickRef.current) return;
-    event.preventDefault();
-    event.stopPropagation();
-    suppressTripClickRef.current = false;
-  };
+  const slides = trips.map((trip) => ({
+    title: t(trip.title),
+    subtitle: t(trip.text),
+    src: trip.image,
+    alt: t(trip.title),
+  }));
 
   return (
     <section className="faq-day-trips" id="day-trips">
@@ -1731,45 +2682,21 @@ function DayTripsSection() {
         <h2>{t("BEYOND")}<br /><span>{t("THE CITY.")}</span></h2>
         <p>{t("Six easy escapes when Tokyo calls for a different pace.")}</p>
       </div>
-      <div
-        ref={tripTrackRef}
-        className="faq-day-trips__grid"
-        onPointerDown={handleTripPointerDown}
-        onPointerMove={handleTripPointerMove}
-        onPointerUp={handleTripPointerUp}
-        onPointerCancel={handleTripPointerUp}
-        onScroll={handleTripScroll}
-        onClickCapture={handleTripClickCapture}
-      >
-        {carouselTrips.map((trip, index) => (
-          <motion.article
-            className={`faq-day-trip-card${activeTripIndex === index ? " is-active" : ""}`}
-            key={`${trip.title}-${index}`}
-            role="button"
-            tabIndex={0}
-            onClick={() => setSelectedTrip(trip)}
-            onKeyDown={(event) => {
-              if (event.key === "Enter" || event.key === " ") {
-                event.preventDefault();
-                setSelectedTrip(trip);
-              }
-            }}
-            initial={{ opacity: 0, y: 36 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, amount: 0.2 }}
-            transition={{ duration: 0.7, delay: (index % trips.length) * 0.12, ease: "easeOut" }}
-          >
-            <div className="faq-day-trip-card__image">
-              <OptimizedImage src={trip.image} alt={t(trip.title)} loading="lazy" sizes="(max-width: 850px) 100vw, 50vw" />
-            </div>
-            <div className="faq-day-trip-card__copy">
-              <span>{t(trip.subtitle)}</span>
-              <h3>{t(trip.title)}</h3>
-              <p>{t(trip.text)}</p>
-            </div>
-          </motion.article>
-        ))}
-      </div>
+      <CoverflowCarousel
+        slides={slides}
+        cardWidth="clamp(220px, 34vw, 400px)"
+        rotate={42}
+        depth={0.58}
+        gap={0.05}
+        showCardCaption
+        showPagination
+        showNavigation
+        autoplay
+        interval={5}
+        label={t("Tokyo day trips")}
+        className="day-trip-coverflow"
+        onSelect={(index) => setSelectedTrip(trips[index])}
+      />
       {selectedTrip && createPortal(
         <div className="day-trip-modal" role="dialog" aria-modal="true" aria-labelledby="day-trip-modal-title" onClick={closeTrip}>
           <section className="day-trip-modal__panel" onClick={(event) => event.stopPropagation()}>
@@ -1877,7 +2804,6 @@ function TaxFreeSection() {
   return (
     <section className="taxfree-section things-taxfree">
       <div className="taxfree-card">
-        <span className="section-label">{t("09 / TAX-FREE — UPDATED 2026")}</span>
         <h2>{t("NOVEMBER")}<br /><span>{t("MATTERS.")}</span></h2>
         <p>{t("Japan's tax-free shopping system changes on November 1, 2026. Under the new system, eligible visitors pay consumption tax at purchase and receive the refund after passing customs on departure. Bring your original passport and follow the retailer's instructions.")}</p>
         <small>{t("The rules and eligibility can change. Check the official Tokyo Tourism / Japan Tourism Agency guidance close to your trip.")}</small>
@@ -2150,7 +3076,6 @@ function ReachOut() {
           </AnimatePresence>
           <div className="reach-visual__wash" aria-hidden="true" />
           <div className="reach-visual__caption" aria-live="polite">
-            <span>{t("JAPAN / TOKYO")} · {photo.number} / 06</span>
             <h2>{t(photo.name)}</h2>
             <p>{t(photo.description)}</p>
           </div>
@@ -2170,21 +3095,21 @@ function Settings({ enabled, onSelectLanguage }) {
       <section className="page-hero settings-hero">
         <span className="section-label">{t("SETTINGS / LANGUAGE")}</span>
         <h1>{t("SETTINGS")}</h1>
-        <p>{t("Use Hiragana across the site")}</p>
+        <p>{t("Use Japanese across the site")}</p>
       </section>
       <main className="settings-page">
         <section className="language-setting">
           <div>
             <span className="section-label">{t("01 / LANGUAGE")}</span>
             <h2>{t("Interface language")}</h2>
-            <p>{t("Switch the site's visible copy to Japanese written in Hiragana.")}</p>
+            <p>{t("Switch the site's visible copy to standard Japanese using kanji, katakana, and hiragana.")}</p>
           </div>
           <div className="language-options" role="group" aria-label={t("Interface language")}>
             <button type="button" aria-pressed={!enabled} className={!enabled ? "active" : ""} onClick={() => onSelectLanguage(false)}>{t("English")}</button>
             <button type="button" aria-pressed={enabled} className={enabled ? "active" : ""} onClick={() => onSelectLanguage(true)}>{t("Japanese")}</button>
           </div>
         </section>
-        <p className="language-status" aria-live="polite">{enabled ? t("Hiragana is on") : t("English")}</p>
+        <p className="language-status" aria-live="polite">{enabled ? t("Japanese is on") : t("English")}</p>
       </main>
       <Footer />
     </>
@@ -2242,13 +3167,16 @@ function App() {
   };
   const [path, setPath] = useState(window.location.pathname);
   const [transitioning, setTransitioning] = useState(false);
-  const [hiragana, setHiragana] = useState(() => localStorage.getItem("tokyo-language") === "hiragana");
-  const appCopy = (text) => hiragana ? hiraganaCopy[text] ?? text : text;
+  const [japanese, setJapanese] = useState(() => {
+    const savedLanguage = localStorage.getItem("tokyo-language");
+    return savedLanguage === "ja" || savedLanguage === "hiragana";
+  });
+  const appCopy = (text) => japanese ? getJapaneseCopy(text) : text;
 
   useEffect(() => {
-    localStorage.setItem("tokyo-language", hiragana ? "hiragana" : "en");
-    document.documentElement.lang = hiragana ? "ja-Hira" : "en";
-  }, [hiragana]);
+    localStorage.setItem("tokyo-language", japanese ? "ja" : "en");
+    document.documentElement.lang = japanese ? "ja" : "en";
+  }, [japanese]);
 
   useEffect(() => {
     const onPopState = () => {
@@ -2282,7 +3210,7 @@ function App() {
   }, []);
 
   return (
-    <HiraganaContext.Provider value={hiragana}>
+    <JapaneseContext.Provider value={japanese}>
     <>
       <div className={`route-wipe ${transitioning ? "is-active" : ""}`} aria-hidden={!transitioning}>
         {transitioning && <FlowerLoader />}
@@ -2290,7 +3218,7 @@ function App() {
       <Header onMenu={() => setMenuOpen((open) => !open)} onPlay={openMusicPlayer} path={path} menuOpen={menuOpen} />
       <MobileMenu open={menuOpen} close={() => setMenuOpen(false)} path={path} />
       <div className="route-stage" key={path}>
-        <Routes path={path} onPlay={openMusicPlayer} musicActive={musicActive} hiragana={hiragana} onSelectLanguage={setHiragana} />
+        <Routes path={path} onPlay={openMusicPlayer} musicActive={musicActive} japanese={japanese} onSelectLanguage={setJapanese} />
       </div>
       {musicActive && (
         <aside className={`persistent-player persistent-player-open${playerMinimized ? " is-minimized" : ""}`} aria-label={appCopy("Tokyo soundtrack player")}>
@@ -2313,14 +3241,14 @@ function App() {
         </aside>
       )}
     </>
-    </HiraganaContext.Provider>
+    </JapaneseContext.Provider>
   );
 }
 
-function Routes({ path, onPlay, musicActive, hiragana, onSelectLanguage }) {
+function Routes({ path, onPlay, musicActive, japanese, onSelectLanguage }) {
 
   if (path === "/settings") {
-    return <Settings enabled={hiragana} onSelectLanguage={onSelectLanguage} />;
+    return <Settings enabled={japanese} onSelectLanguage={onSelectLanguage} />;
   }
 
   if (path === "/things-to-do") {

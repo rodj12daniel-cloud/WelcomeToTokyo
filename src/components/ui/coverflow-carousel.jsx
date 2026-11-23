@@ -17,6 +17,10 @@ export function CoverflowCarousel({
   showCaption = false,
   showPagination = false,
   showNavigation = false,
+  showCardCaption = false,
+  onSelect,
+  autoplay = false,
+  interval = 3.5,
   label = "Cover carousel",
   className = "",
 }) {
@@ -28,6 +32,7 @@ export function CoverflowCarousel({
   const widthRef = useRef(0);
   const rafRef = useRef(null);
   const dragRef = useRef(null);
+  const interactionRef = useRef({ hover: false, focus: false });
   const [selected, setSelected] = useState(0);
 
   const indexAt = (position) => ((Math.round(position) % count) + count) % count;
@@ -98,6 +103,8 @@ export function CoverflowCarousel({
       pos: posRef.current,
       velocity: 0,
       time: performance.now(),
+      downIndex: Number(event.target.closest(".coverflow-carousel__card")?.dataset.index ?? -1),
+      moved: false,
     };
   };
 
@@ -108,6 +115,7 @@ export function CoverflowCarousel({
     if (!pitch) return;
 
     const now = performance.now();
+    if (Math.abs(event.clientX - drag.x) > 6) drag.moved = true;
     const previous = posRef.current;
     posRef.current = clamp(drag.pos - (event.clientX - drag.x) / pitch);
     drag.velocity = ((posRef.current - previous) / Math.max(now - drag.time, 1)) * 1000;
@@ -122,6 +130,11 @@ export function CoverflowCarousel({
     const drag = dragRef.current;
     if (!drag || drag.id !== event.pointerId) return;
     dragRef.current = null;
+    if (!drag.moved && drag.downIndex >= 0) {
+      if (indexAt(posRef.current) === drag.downIndex) onSelect?.(drag.downIndex);
+      else goTo(drag.downIndex);
+      return;
+    }
     const carried = Math.max(-2, Math.min(2, drag.velocity * 0.18));
     settle(clamp(Math.round(posRef.current + carried)));
   };
@@ -146,6 +159,15 @@ export function CoverflowCarousel({
     if (rafRef.current !== null) cancelAnimationFrame(rafRef.current);
   }, []);
 
+  useEffect(() => {
+    if (!autoplay || count < 2) return undefined;
+    const timer = window.setInterval(() => {
+      if (interactionRef.current.hover || interactionRef.current.focus || dragRef.current || document.hidden) return;
+      settle(clamp(Math.round(targetRef.current) + 1));
+    }, Math.max(400, interval * 1000));
+    return () => window.clearInterval(timer);
+  }, [autoplay, count, interval, loop]);
+
   if (!count) return null;
   const active = slides[selected];
 
@@ -156,6 +178,12 @@ export function CoverflowCarousel({
       role="region"
       aria-roledescription="carousel"
       aria-label={label}
+      onPointerEnter={() => { interactionRef.current.hover = true; }}
+      onPointerLeave={() => { interactionRef.current.hover = false; }}
+      onFocusCapture={() => { interactionRef.current.focus = true; }}
+      onBlurCapture={(event) => {
+        if (!event.currentTarget.contains(event.relatedTarget)) interactionRef.current.focus = false;
+      }}
     >
       <div className="coverflow-carousel__stage">
         <div
@@ -173,6 +201,9 @@ export function CoverflowCarousel({
             } else if (event.key === "ArrowRight") {
               event.preventDefault();
               nudge(1);
+            } else if (event.key === "Enter" || event.key === " ") {
+              event.preventDefault();
+              onSelect?.(selected);
             }
           }}
           style={{ perspective: `calc(var(--cf-card) * var(--cf-perspective))` }}
@@ -184,11 +215,18 @@ export function CoverflowCarousel({
                 ref={(node) => { cardRefs.current[index] = node; }}
                 className="coverflow-carousel__card"
                 style={{ width: "var(--cf-card)" }}
+                data-index={index}
                 role="group"
                 aria-roledescription="slide"
                 aria-label={`${index + 1} of ${count}`}
               >
                 <img src={slide.src} alt={slide.alt} draggable="false" />
+                {showCardCaption && index === selected && (
+                  <div className="coverflow-carousel__card-caption">
+                    <strong>{slide.title}</strong>
+                    {slide.subtitle && <span>{slide.subtitle}</span>}
+                  </div>
+                )}
               </div>
             ))}
           </div>

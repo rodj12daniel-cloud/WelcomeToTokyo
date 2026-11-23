@@ -630,6 +630,8 @@ const japaneseUiOverrides = {
   "Compare Narita Express and other current airport services using a live planner.": "成田エクスプレスなどの空港アクセスを、最新の経路検索で比較してください。",
   "Compare current JR / Keikyu or monorail connections using a live planner.": "JR・京急・モノレールの最新の乗り継ぎを経路検索でご確認ください。",
   "Open a topic for simple, practical advice.": "項目を開いて、簡単で実用的な案内をご覧ください。",
+  "Train platform in Tokyo": "東京の駅のホーム",
+  "Take a moment to check the platform signs before boarding.": "乗車前に、ホームの案内表示を確認しましょう。",
   "Suica and PASMO are rechargeable IC cards used on most participating JR, subway and private railway services, plus many buses and shops.": "SuicaとPASMOは、JR、地下鉄、私鉄などの対応路線や多くのバス・店舗で使えるチャージ式ICカードです。",
   "Buy or charge a card at a station ticket machine or service counter where available. Mobile card options depend on your device and region.": "駅の券売機や窓口で購入・チャージできます。モバイル版の利用可否は端末や地域によって異なります。",
   "Tap once at the entry gate and tap again at the exit gate. Use the same card throughout the trip and keep it ready at the gate.": "改札の入場時と出場時に同じカードをタッチします。改札ではすぐ使えるように準備しましょう。",
@@ -2298,7 +2300,7 @@ function TrainGuide() {
       </section>
 
       <main className="train-guide-page">
-        <section className="train-guide-section train-map-section" id="train-map">
+        <TrainRevealSection className="train-map-section" id="train-map">
           <div className="train-section-heading">
             <span className="section-label">{t("INTERACTIVE NETWORK")}</span>
             <h2>{t("Explore the railway map")}</h2>
@@ -2355,9 +2357,9 @@ function TrainGuide() {
           </div>
           <p className="train-map-legend"><strong>{t("Legend")}</strong> {t("JR East")}, {t("Tokyo Metro")}, {t("Toei Subway")}: {t("line colors follow common operator line-color references where available. White circles mark selected station areas. Pan and zoom using the map controls.")}</p>
           <span className="train-map-attribution">{t("Map tiles © OpenStreetMap contributors. Station pins indicate approximate station areas.")}</span>
-        </section>
+        </TrainRevealSection>
 
-        <section className="train-guide-section" id="rail-directory">
+        <TrainRevealSection id="rail-directory">
           <div className="train-section-heading">
             <span className="section-label">{t("LINE DIRECTORY")}</span>
             <h2>{t("Find your line")}</h2>
@@ -2370,7 +2372,12 @@ function TrainGuide() {
           <div className="train-directory">
             {directoryMatches.map((group) => (
               <details className="train-operator" key={group.operator} open={!!directorySearch || openOperator === group.operator}>
-                <summary><span>{t(group.operator)}</span><small>{t(group.type)} · {group.lines.length} {t("lines")}</small></summary>
+                <summary>
+                  <span className="train-operator__summary-copy">
+                    <strong>{t(group.operator)}</strong>
+                    <small>{t(group.type)} · {group.lines.length} {t("lines")}</small>
+                  </span>
+                </summary>
                 <div className="train-directory-lines">
                   {group.lines.map((line) => (
                     <article className="train-directory-line" key={line.name}>
@@ -2390,9 +2397,9 @@ function TrainGuide() {
             {!directoryMatches.length && <p className="train-empty-state">{t("No matching railway lines.")}</p>}
           </div>
           <p className="train-operator-note">{t("Tokyo Metro and Toei Subway are separate operators with separate fares and station gates. Follow the operator and line signs when transferring.")}</p>
-        </section>
+        </TrainRevealSection>
 
-        <section className="train-guide-section train-route-section" id="route-finder">
+        <TrainRevealSection className="train-route-section" id="route-finder">
           <div className="train-section-heading">
             <span className="section-label">{t("ROUTE FINDER")}</span>
             <h2>{t("Plan a journey")}</h2>
@@ -2417,9 +2424,9 @@ function TrainGuide() {
             </div>
             <a href={routeMapUrl} target="_blank" rel="noreferrer">{t("Open Google Maps Transit ↗")}</a>
           </div>}
-        </section>
+        </TrainRevealSection>
 
-        <section className="train-guide-section train-shortcuts-section">
+        <TrainRevealSection className="train-shortcuts-section">
           <div className="train-section-heading">
             <span className="section-label">{t("TOURIST SHORTCUTS")}</span>
             <h2>{t("Popular journeys")}</h2>
@@ -2432,13 +2439,24 @@ function TrainGuide() {
               </button>
             ))}
           </div>
-        </section>
+        </TrainRevealSection>
 
-        <section className="train-guide-section" id="before-you-board">
-          <div className="train-section-heading">
-            <span className="section-label">{t("FIRST-TIME VISITORS")}</span>
-            <h2>{t("BEFORE YOU BOARD")}</h2>
-            <p>{t("Open a topic for simple, practical advice.")}</p>
+        <TrainRevealSection id="before-you-board">
+          <div className="train-learning-intro">
+            <div className="train-section-heading">
+              <span className="section-label">{t("FIRST-TIME VISITORS")}</span>
+              <h2>{t("BEFORE YOU BOARD")}</h2>
+              <p>{t("Open a topic for simple, practical advice.")}</p>
+            </div>
+            <figure className="train-learning-photo">
+              <OptimizedImage
+                src="https://images.pexels.com/photos/31385056/pexels-photo-31385056.jpeg?cs=srgb&fm=jpg"
+                alt={t("Train platform in Tokyo")}
+                loading="lazy"
+                sizes="(max-width: 700px) 100vw, 42vw"
+              />
+              <figcaption>{t("Take a moment to check the platform signs before boarding.")}</figcaption>
+            </figure>
           </div>
           <div className="train-learning-grid">
             {visitorGuides.map((guide) => (
@@ -2448,9 +2466,9 @@ function TrainGuide() {
               </details>
             ))}
           </div>
-        </section>
+        </TrainRevealSection>
 
-        <section className="train-guide-section" id="airport-access">
+        <TrainRevealSection id="airport-access">
           <div className="train-section-heading">
             <span className="section-label">{t("AIRPORT ACCESS")}</span>
             <h2>{t("From the airport to Tokyo")}</h2>
@@ -2470,10 +2488,26 @@ function TrainGuide() {
               </article>
             ))}
           </div>
-        </section>
+        </TrainRevealSection>
       </main>
       <Footer />
     </>
+  );
+}
+
+function TrainRevealSection({ children, className = "", id }) {
+  const reduceMotion = useReducedMotion();
+  return (
+    <motion.section
+      id={id}
+      className={`train-guide-section${className ? ` ${className}` : ""}`}
+      initial={reduceMotion ? false : { opacity: 0, y: 22 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, amount: 0.12 }}
+      transition={{ duration: reduceMotion ? 0 : 0.55, ease: [0.22, 1, 0.36, 1] }}
+    >
+      {children}
+    </motion.section>
   );
 }
 
